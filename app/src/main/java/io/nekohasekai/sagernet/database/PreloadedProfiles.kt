@@ -1,5 +1,6 @@
 package io.nekohasekai.sagernet.database
 
+import io.nekohasekai.sagernet.GroupType
 import io.nekohasekai.sagernet.fmt.AbstractBean
 import io.nekohasekai.sagernet.fmt.ssh.SSHBean
 import io.nekohasekai.sagernet.fmt.v2ray.VMessBean
