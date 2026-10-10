@@ -48,10 +48,20 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - name: Build
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > rezabox.keystore
+      - name: Build (signed)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           echo 'org.gradle.jvmargs= -Xmx4G' >> gradle.properties
-          ./gradlew app:assembleOssRelease --no-daemon
+          ./gradlew app:assembleOssRelease --no-daemon \
+            -Pandroid.injected.signing.store.file=$(pwd)/rezabox.keystore \
+            -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$KEY_PASSWORD
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
