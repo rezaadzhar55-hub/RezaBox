@@ -52,6 +52,8 @@ object PreloadedProfiles {
                 ProfileManager.createProfile(group.id, vmessBean())
                 ProfileManager.createProfile(group.id, sshBean())
 
+                // aktifkan log level info supaya Logcat tidak kosong
+                DataStore.configurationStore.putString("logLevel", "2")
                 DataStore.configurationStore.putString(PREF_KEY, "1")
                 Logs.i("Preloaded profiles injected")
             } catch (e: Exception) {
