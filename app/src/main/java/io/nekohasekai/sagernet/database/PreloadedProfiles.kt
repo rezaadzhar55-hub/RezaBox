@@ -16,6 +16,7 @@ object PreloadedProfiles {
             name = "Reza VMess (CF)"
             serverAddress = "ws.rezadhar.dpdns.org"
             serverPort = 443
+            type = "ws"
             uuid = "a8f1d5e6-7d97-450b-91ec-71feb321f9c1"
             encryption = "auto"
             security = "tls"
@@ -30,6 +31,7 @@ object PreloadedProfiles {
             name = "Reza VMess (NoTLS 80)"
             serverAddress = "sshws.rezadhar.dpdns.org"
             serverPort = 80
+            type = "ws"
             uuid = "a8f1d5e6-7d97-450b-91ec-71feb321f9c1"
             encryption = "auto"
             security = ""
