@@ -4028,6 +4028,20 @@ public class SingBoxOptions {
 
     }
 
+    public static class Outbound_InjectorOptions extends Outbound {
+
+        public String detour;
+
+        public String server;
+
+        public Integer server_port;
+
+        public String payload;
+
+        public Boolean websocket_mode;
+
+    }
+
     public static class Outbound_SSHOptions extends Outbound {
 
         // Generate note: nested type DialerOptions

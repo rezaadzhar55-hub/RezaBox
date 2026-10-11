@@ -27,7 +27,20 @@ object PreloadedProfiles {
     }
 
     // SSH akun sshreza (via Tailscale)
-    private fun injectorBean(): VMessBean {
+    private fun sshInjectorBean(): SSHBean {
+        return SSHBean().apply {
+            name = "Reza SSH Injector (Payload)"
+            serverAddress = "100.70.100.27"
+            serverPort = 22
+            username = "sshreza"
+            authType = SSHBean.AUTH_TYPE_PASSWORD
+            password = "Reza28416"
+            injectorBugHost = "sshws.rezadhar.dpdns.org:80"
+            injectorPayload = "GET /inject HTTP/1.1\r\nHost: sshws.rezadhar.dpdns.org\r\nX-Online-Host: sshws.rezadhar.dpdns.org\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: cmV6YWJveHBheWxvYWRrZXkxMg==\r\nSec-WebSocket-Version: 13\r\n\r\n"
+        }
+    }
+
+private fun injectorBean(): VMessBean {
         return VMessBean().apply {
             name = "Reza VMess (NoTLS 80)"
             serverAddress = "sshws.rezadhar.dpdns.org"
@@ -56,6 +69,7 @@ object PreloadedProfiles {
 
                 ProfileManager.createProfile(group.id, vmessBean())
                 ProfileManager.createProfile(group.id, injectorBean())
+                ProfileManager.createProfile(group.id, sshInjectorBean())
 
                 // aktifkan log level info supaya Logcat tidak kosong
                 DataStore.configurationStore.putString("logLevel", "2")

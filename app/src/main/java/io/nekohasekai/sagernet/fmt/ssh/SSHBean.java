@@ -22,6 +22,8 @@ public class SSHBean extends AbstractBean {
     public String privateKey;
     public String privateKeyPassphrase;
     public String publicKey;
+    public String injectorBugHost;
+    public String injectorPayload;
 
     @Override
     public void initializeDefaultValues() {
@@ -35,6 +37,8 @@ public class SSHBean extends AbstractBean {
         if (privateKey == null) privateKey = "";
         if (privateKeyPassphrase == null) privateKeyPassphrase = "";
         if (publicKey == null) publicKey = "";
+        if (injectorBugHost == null) injectorBugHost = "";
+        if (injectorPayload == null) injectorPayload = "";
     }
 
     @Override
@@ -55,6 +59,8 @@ public class SSHBean extends AbstractBean {
                 break;
         }
         output.writeString(publicKey);
+        output.writeString(injectorBugHost);
+        output.writeString(injectorPayload);
     }
 
     @Override
@@ -75,6 +81,8 @@ public class SSHBean extends AbstractBean {
                 break;
         }
         publicKey = input.readString();
+        injectorBugHost = input.readString();
+        injectorPayload = input.readString();
     }
 
     @NotNull

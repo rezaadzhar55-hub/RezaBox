@@ -450,6 +450,17 @@ fun buildConfig(
                 }
 
                 outbounds.add(currentOutbound)
+                // injector payload (SSH over bug host, gaya HTTP Injector)
+                if (bean is SSHBean && !bean.injectorPayload.isNullOrBlank()) {
+                    outbounds.add(Outbound_InjectorOptions().apply {
+                        type = "injector"
+                        tag = "injector"
+                        server = bean.injectorBugHost.substringBefore(":")
+                        server_port = bean.injectorBugHost.substringAfter(":", "80").toInt()
+                        payload = bean.injectorPayload
+                        websocket_mode = true
+                    })
+                }
                 chainOutbounds.add(currentOutbound)
                 pastOutbound = currentOutbound
                 pastEntity = proxyEntity
