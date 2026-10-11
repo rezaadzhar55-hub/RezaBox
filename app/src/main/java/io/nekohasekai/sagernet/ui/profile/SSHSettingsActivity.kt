@@ -24,6 +24,8 @@ class SSHSettingsActivity : ProfileSettingsActivity<SSHBean>() {
         DataStore.serverPrivateKey = privateKey
         DataStore.serverPassword1 = privateKeyPassphrase
         DataStore.serverCertificates = publicKey
+        DataStore.sshInjectorBugHost = injectorBugHost
+        DataStore.sshInjectorPayload = injectorPayload
     }
 
     override fun SSHBean.serialize() {
@@ -44,6 +46,8 @@ class SSHSettingsActivity : ProfileSettingsActivity<SSHBean>() {
             }
         }
         publicKey = DataStore.serverCertificates
+        injectorBugHost = DataStore.sshInjectorBugHost
+        injectorPayload = DataStore.sshInjectorPayload
     }
 
     override fun PreferenceFragmentCompat.createPreferences(

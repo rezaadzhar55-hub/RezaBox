@@ -55,6 +55,18 @@
             app:key="serverCertificates"
             app:title="@string/ssh_public_key"
             app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:icon="@drawable/ic_hardware_router"
+            app:key="sshInjectorBugHost"
+            app:title="Bug Host (host:port)"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:icon="@drawable/ic_baseline_bug_report_24"
+            app:key="sshInjectorPayload"
+            app:title="Payload (HTTP request)"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
 
