@@ -89,7 +89,7 @@ class StatsBar @JvmOverloads constructor(
         if ((state == BaseService.State.Connected).also { hideOnScroll = it }) {
             postWhenStarted {
                 if (allowShow) performShow()
-                setStatus(app.getText(R.string.vpn_connected))
+                setStatus(app.getText(R.string.stop)) // terhubung -> tombol jadi STOP (gaya HI)
             }
         } else {
             postWhenStarted {
@@ -101,7 +101,7 @@ class StatsBar @JvmOverloads constructor(
                     when (state) {
                         BaseService.State.Connecting -> R.string.connecting
                         BaseService.State.Stopping -> R.string.stopping
-                        else -> R.string.not_connected
+                        else -> R.string.start // mati -> tombol START (gaya HI)
                     }
                 )
             )

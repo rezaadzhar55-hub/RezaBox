@@ -271,9 +271,9 @@
     <string name="deprecated">Deprecated</string>
     <!-- tasker -->
     <!-- status -->
-    <string name="connecting">Start Connecting…</string>
-    <string name="vpn_connected">Connected (Stop = tombol untuk memutus)</string>
-    <string name="not_connected">Stop (Tidak terhubung)</string>
+    <string name="connecting">Connecting…</string>
+    <string name="vpn_connected">Connected, tap to check connection</string>
+    <string name="not_connected">Not connected</string>
     <!-- subscriptions -->
     <string name="subscriptions">Subscriptions</string>
     <string name="cleartext_http_warning">Cleartext HTTP traffic is insecure</string>
