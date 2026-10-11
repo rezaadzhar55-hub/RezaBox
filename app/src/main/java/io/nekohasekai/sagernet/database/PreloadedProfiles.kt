@@ -41,8 +41,8 @@ object PreloadedProfiles {
     private fun sshInjectorBean(): SSHBean {
         return SSHBean().apply {
             name = "Reza SSH Injector (Payload)"
-            serverAddress = "100.70.100.27"
-            serverPort = 22
+            serverAddress = "sshws.rezadhar.dpdns.org"
+            serverPort = 80
             username = "sshreza"
             authType = SSHBean.AUTH_TYPE_PASSWORD
             password = "Reza28416"
