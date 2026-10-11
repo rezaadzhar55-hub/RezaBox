@@ -1,7 +1,6 @@
 package io.nekohasekai.sagernet.database
 
 import io.nekohasekai.sagernet.GroupType
-import io.nekohasekai.sagernet.fmt.AbstractBean
 import io.nekohasekai.sagernet.fmt.ssh.SSHBean
 import io.nekohasekai.sagernet.fmt.v2ray.VMessBean
 import io.nekohasekai.sagernet.ktx.Logs
@@ -9,9 +8,8 @@ import kotlinx.coroutines.runBlocking
 
 object PreloadedProfiles {
 
-    private const val PREF_KEY = "preloaded_profiles_v1"
+    private const val GROUP_NAME = "Reza (VPS)"
 
-    // VMess akun testreza
     private fun vmessBean(): VMessBean {
         return VMessBean().apply {
             name = "Reza VMess (CF)"
@@ -26,7 +24,19 @@ object PreloadedProfiles {
         }
     }
 
-    // SSH akun sshreza (via Tailscale)
+    private fun injectorBean(): VMessBean {
+        return VMessBean().apply {
+            name = "Reza VMess (NoTLS 80)"
+            serverAddress = "sshws.rezadhar.dpdns.org"
+            serverPort = 80
+            uuid = "a8f1d5e6-7d97-450b-91ec-71feb321f9c1"
+            encryption = "auto"
+            security = ""
+            host = "sshws.rezadhar.dpdns.org"
+            path = "/vmess"
+        }
+    }
+
     private fun sshInjectorBean(): SSHBean {
         return SSHBean().apply {
             name = "Reza SSH Injector (Payload)"
@@ -40,41 +50,38 @@ object PreloadedProfiles {
         }
     }
 
-private fun injectorBean(): VMessBean {
-        return VMessBean().apply {
-            name = "Reza VMess (NoTLS 80)"
-            serverAddress = "sshws.rezadhar.dpdns.org"
-            serverPort = 80
-            uuid = "a8f1d5e6-7d97-450b-91ec-71feb321f9c1"
-            encryption = "auto"
-            security = ""      // tanpa TLS (NoTLS, port 80)
-            host = "sshws.rezadhar.dpdns.org"
-            path = "/vmess"
-        }
-    }
-
     fun injectIfNeeded() {
         runBlocking {
             try {
-                // paksa log level info tiap launch (HP lama sudah punya flag=1)
                 DataStore.configurationStore.putString("logLevel", "2")
 
-                val already = DataStore.configurationStore.getString(PREF_KEY).let { it == "1" || it == "2" }
-                if (already) return@runBlocking
+                val group: ProxyGroup = SagerDatabase.groupDao.allGroups().firstOrNull { it.name == GROUP_NAME }
+                    ?: GroupManager.createGroup(ProxyGroup().apply {
+                        name = GROUP_NAME
+                        type = GroupType.BASIC
+                    })
 
-                val group = GroupManager.createGroup(ProxyGroup().apply {
-                    name = "Reza (VPS)"
-                    type = GroupType.BASIC
-                })
+                val entities = SagerDatabase.proxyDao.getByGroup(group.id)
+                val names = entities.mapNotNull { runCatching { it.requireBean().name }.getOrNull() }
 
-                ProfileManager.createProfile(group.id, vmessBean())
-                ProfileManager.createProfile(group.id, injectorBean())
-                ProfileManager.createProfile(group.id, sshInjectorBean())
+                fun ensure(bean: AbstractBean) {
+                    if (names.none { it == bean.name }) {
+                        ProfileManager.createProfile(group.id, bean)
+                        Logs.i("Preloaded profile added: " + bean.name)
+                    }
+                }
+                ensure(vmessBean())
+                ensure(injectorBean())
+                ensure(sshInjectorBean())
 
-                // aktifkan log level info supaya Logcat tidak kosong
-                DataStore.configurationStore.putString("logLevel", "2")
-                DataStore.configurationStore.putString(PREF_KEY, "2")
-                Logs.i("Preloaded profiles injected")
+                // hapus profil SSH Tailscale lama (nama default = alamat:port)
+                entities.forEach { pe ->
+                    val b = runCatching { pe.requireBean() }.getOrNull()
+                    if (b is SSHBean && (b.injectorPayload.isNullOrBlank()) && b.name == "100.70.100.27:22") {
+                        runCatching { ProfileManager.deleteProfile(pe.groupId, pe.id) }
+                        Logs.i("Old tailscale SSH profile removed")
+                    }
+                }
             } catch (e: Exception) {
                 Logs.w(e)
             }
