@@ -72,7 +72,7 @@
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
-            app:icon="@drawable/ic_baseline_swap_horiz_24"
+            app:icon="@drawable/ic_baseline_compare_arrows_24"
             app:key="sshInjectorProxy"
             app:title="Remote Proxy (host:port)"
             app:useSimpleSummaryProvider="true" />
