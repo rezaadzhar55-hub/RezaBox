@@ -2,6 +2,7 @@ package io.nekohasekai.sagernet.fmt.ssh;
 
 import androidx.annotation.NonNull;
 
+import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 
@@ -81,8 +82,14 @@ public class SSHBean extends AbstractBean {
                 break;
         }
         publicKey = input.readString();
-        injectorBugHost = input.readString();
-        injectorPayload = input.readString();
+        try {
+            injectorBugHost = input.readString();
+            injectorPayload = input.readString();
+        } catch (KryoException e) {
+            // data lama: profil dibuat sebelum ada field injector
+            injectorBugHost = "";
+            injectorPayload = "";
+        }
     }
 
     @NotNull
