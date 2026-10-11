@@ -66,29 +66,28 @@ public class SSHBean extends AbstractBean {
 
     @Override
     public void deserialize(ByteBufferInput input) {
-        int version = input.readInt();
-        super.deserialize(input);
-        username = input.readString();
-        authType = input.readInt();
-        switch (authType) {
-            case AUTH_TYPE_NONE:
-                break;
-            case AUTH_TYPE_PASSWORD:
-                password = input.readString();
-                break;
-            case AUTH_TYPE_PRIVATE_KEY:
-                privateKey = input.readString();
-                privateKeyPassphrase = input.readString();
-                break;
-        }
-        publicKey = input.readString();
         try {
+            int version = input.readInt();
+            super.deserialize(input);
+            username = input.readString();
+            authType = input.readInt();
+            switch (authType) {
+                case AUTH_TYPE_NONE:
+                    break;
+                case AUTH_TYPE_PASSWORD:
+                    password = input.readString();
+                    break;
+                case AUTH_TYPE_PRIVATE_KEY:
+                    privateKey = input.readString();
+                    privateKeyPassphrase = input.readString();
+                    break;
+            }
+            publicKey = input.readString();
             injectorBugHost = input.readString();
             injectorPayload = input.readString();
         } catch (KryoException e) {
-            // data lama: profil dibuat sebelum ada field injector
-            injectorBugHost = "";
-            injectorPayload = "";
+            // data lama: profil dibuat versi sebelum ada field baru — pakai apa yang terbaca
+            android.util.Log.w("KryoConverters", "SSHBean partial deserialize: " + e.getMessage());
         }
     }
 
