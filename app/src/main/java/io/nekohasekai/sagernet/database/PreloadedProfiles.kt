@@ -50,7 +50,7 @@ object PreloadedProfiles {
             password = "Reza28416"
             injectorBugHost = ""
             injectorPayload = "GET /inject HTTP/1.1\r\nHost: sshws.rezadhar.dpdns.org\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: cmV6YWJveHBheWxvYWRrZXkxMg==\r\nSec-WebSocket-Version: 13\r\n\r\n"
-            injectorProxy = "tripay.co.id:80"
+            injectorProxy = ""
             injectorMethod = 0
         }
     }
@@ -77,7 +77,8 @@ object PreloadedProfiles {
                     } else {
                         // sinkronkan field injector ke profil existing (perbaiki profil lama rusak)
                         val b = runCatching { existing.requireBean() }.getOrNull()
-                        if (b is SSHBean && bean is SSHBean) {
+                        if (b is SSHBean && bean is SSHBean && b.injectorPayload.isNullOrBlank()) {
+                            // hanya perbaiki profil rusak (payload kosong) — jangan timpa editan user
                             b.injectorBugHost = bean.injectorBugHost
                             b.injectorPayload = bean.injectorPayload
                             b.injectorProxy = bean.injectorProxy
@@ -87,7 +88,7 @@ object PreloadedProfiles {
                             b.serverAddress = bean.serverAddress
                             b.serverPort = bean.serverPort
                             runCatching { ProfileManager.updateProfile(existing) }
-                            Logs.i("Preloaded profile updated: " + bean.name)
+                            Logs.i("Preloaded profile repaired: " + bean.name)
                         }
                     }
                 }
