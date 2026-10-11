@@ -12,7 +12,8 @@ if [ ! -d "sing-box" ]; then
   git clone --no-checkout -b rezabox-injector https://github.com/rezaadzhar55-hub/sing-box.git
 fi
 pushd sing-box
-git checkout "$COMMIT_SING_BOX"
+git fetch origin rezabox-injector || true
+git checkout -q FETCH_HEAD || git checkout "$COMMIT_SING_BOX"
 popd
 
 ####
