@@ -194,6 +194,8 @@
     <string name="invalid_server">Invalid server name</string>
     <string name="service_failed">Failed: </string>
     <string name="stop">Stop</string>
+    <string name="start">Start</string>
+    <string name="start_connecting">Start Connecting</string>
     <string name="stopping">Shutting down…</string>
     <string name="vpn_error">%s</string>
     <string name="vpn_permission_denied">Permission denied to create a VPN service</string>
@@ -269,9 +271,9 @@
     <string name="deprecated">Deprecated</string>
     <!-- tasker -->
     <!-- status -->
-    <string name="connecting">Connecting…</string>
-    <string name="vpn_connected">Connected, tap to check connection</string>
-    <string name="not_connected">Not connected</string>
+    <string name="connecting">Start Connecting…</string>
+    <string name="vpn_connected">Connected (Stop = tombol untuk memutus)</string>
+    <string name="not_connected">Stop (Tidak terhubung)</string>
     <!-- subscriptions -->
     <string name="subscriptions">Subscriptions</string>
     <string name="cleartext_http_warning">Cleartext HTTP traffic is insecure</string>
@@ -476,7 +478,6 @@
     <string name="stun_test">NAT behaviour discovery</string>
     <string name="stun_test_summary">Determine the client\'s NAT mapping behaviour and the NAT
         filtering behaviour defined in RFC 3478 using STUN.</string>
-    <string name="start">Start</string>
     <string name="stun_attest_loading">This may take a few minutes…</string>
     <string name="nat_stun_server_hint">Stun server</string>
     <string name="nat_result_hint">NAT check result</string>
