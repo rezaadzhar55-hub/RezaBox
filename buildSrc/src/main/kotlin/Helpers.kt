@@ -200,7 +200,7 @@ fun Project.setupApp() {
                         "NekoBox-" + requireMetadata().getProperty("PRE_VERSION_NAME")
                     ).replace("-preview", "")
                 } else {
-                    outputFileName.replace(project.name, "NekoBox-$versionName")
+                    outputFileName.replace(project.name, "NekoBox-$versionName-injector")
                         .replace("-release", "")
                         .replace("-oss", "")
                 }
