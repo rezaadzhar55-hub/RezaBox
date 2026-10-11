@@ -542,4 +542,19 @@
         <item>2</item>
         <item>3</item>
     </string-array>
+
+    <string-array name="ping_intervals" translatable="false">
+        <item>10 detik</item>
+        <item>30 detik</item>
+        <item>1 menit</item>
+        <item>2 menit</item>
+        <item>5 menit</item>
+    </string-array>
+    <string-array name="ping_interval_values" translatable="false">
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+    </string-array>
 </resources>

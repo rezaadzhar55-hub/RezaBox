@@ -4,6 +4,7 @@ import io.nekohasekai.sagernet.BuildConfig
 import io.nekohasekai.sagernet.bg.BaseService
 import io.nekohasekai.sagernet.bg.ServiceNotification
 import io.nekohasekai.sagernet.database.ProxyEntity
+import io.nekohasekai.sagernet.database.PingWorker
 import io.nekohasekai.sagernet.ktx.Logs
 import io.nekohasekai.sagernet.ktx.runOnDefaultDispatcher
 import kotlinx.coroutines.runBlocking
@@ -53,10 +54,15 @@ class ProxyInstance(profile: ProxyEntity, var service: BaseService.Interface? = 
             looper = service?.let { TrafficLooper(it.data, this) }
             looper?.start()
         }
+        // ping gaya HI (opsional, diatur di Settings)
+        runOnDefaultDispatcher {
+            PingWorker.start()
+        }
     }
 
     override fun close() {
         super.close()
+        PingWorker.stop()
         runBlocking {
             looper?.stop()
             looper = null

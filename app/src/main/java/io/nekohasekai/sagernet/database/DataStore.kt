@@ -120,6 +120,9 @@ object DataStore : OnPreferenceDataStoreChangeListener {
 
     var rulesProvider by configurationStore.stringToInt(Key.RULES_PROVIDER)
     var logLevel by configurationStore.stringToInt(Key.LOG_LEVEL)
+    var pingEnabled by configurationStore.boolean(Key.PING_ENABLED) { false }
+    var pingInterval by configurationStore.int(Key.PING_INTERVAL) { 30 }
+    var pingTarget by configurationStore.string(Key.PING_TARGET) { "https://sshws.rezadhar.dpdns.org/cdn-cgi/trace" }
     var logBufSize by configurationStore.int(Key.LOG_BUF_SIZE) { 0 }
     var acquireWakeLock by configurationStore.boolean(Key.ACQUIRE_WAKE_LOCK)
 
