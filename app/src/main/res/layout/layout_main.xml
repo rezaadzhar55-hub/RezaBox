@@ -34,19 +34,20 @@
 
         <TextView
             android:id="@+id/fabLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="7dp"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:elevation="6dp"
             android:background="@drawable/bg_fab_label"
             android:textColor="#FFFFFF"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:text="START"
-            app:layout_anchor="@id/fab"
-            app:layout_anchorGravity="bottom|center_horizontal"
-            android:layout_marginTop="2dp" />
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_anchor="@id/stats"
+            app:layout_anchorGravity="top|center_horizontal"
+            android:layout_marginBottom="4dp" />
 
         <io.nekohasekai.sagernet.widget.ServiceButton
             android:id="@+id/fab"

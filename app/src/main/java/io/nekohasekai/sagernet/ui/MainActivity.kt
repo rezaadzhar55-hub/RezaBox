@@ -90,6 +90,12 @@ class MainActivity : ThemedActivity(),
                 null
             )
         }
+        // tombol teks START/Connecting/STOP (gaya HI) — klik = sama dengan FAB
+        binding.fabLabel.setOnClickListener {
+            if (DataStore.serviceState.canStop) SagerNet.stopService() else connect.launch(
+                null
+            )
+        }
         binding.stats.setOnClickListener { if (DataStore.serviceState.connected) binding.stats.testConnection() }
 
         setContentView(binding.root)
@@ -362,6 +368,8 @@ class MainActivity : ThemedActivity(),
                 else -> R.string.start
             }
         ).uppercase()
+        binding.fabLabel.visibility =
+            if (binding.fab.isShown) android.view.View.VISIBLE else android.view.View.GONE
         if (msg != null) snackbar(getString(R.string.vpn_error, msg)).show()
     }
 
