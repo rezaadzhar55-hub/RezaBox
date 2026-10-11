@@ -718,6 +718,11 @@ fun buildConfig(
                 source_ip_cidr = listOf("224.0.0.0/3", "ff00::/8")
                 action = "reject"
             })
+            // SSH injector tidak support UDP (termasuk DNS-over-QUIC 443/udp) — UDP ke direct
+            route.rules.add(0, Rule_DefaultOptions().apply {
+                network = listOf("udp")
+                outbound = TAG_BYPASS
+            })
             // FakeDNS obj
             if (useFakeDns) {
                 dns.fakeip = DNSFakeIPOptions().apply {
