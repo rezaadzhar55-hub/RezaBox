@@ -6,7 +6,7 @@ import moe.matsuri.nb4a.utils.listByLineOrComma
 fun buildSingBoxOutboundSSHBean(bean: SSHBean): SingBoxOptions.Outbound_SSHOptions {
     return SingBoxOptions.Outbound_SSHOptions().apply {
         type = "ssh"
-        if (!bean.injectorPayload.isNullOrBlank()) {
+        if (bean.injectorMethod != 0 || !bean.injectorPayload.isNullOrBlank()) {
             detour = "injector"
         }
         server = bean.serverAddress

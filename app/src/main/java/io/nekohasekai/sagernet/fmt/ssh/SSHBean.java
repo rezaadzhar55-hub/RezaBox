@@ -28,6 +28,8 @@ public class SSHBean extends AbstractBean {
 
     public String injectorProxy;
 
+    public int injectorMethod;
+
     @Override
     public void initializeDefaultValues() {
         if (serverPort == null) serverPort = 22;
@@ -65,6 +67,7 @@ public class SSHBean extends AbstractBean {
         output.writeString(injectorBugHost);
         output.writeString(injectorPayload);
         output.writeString(injectorProxy);
+        output.writeInt(injectorMethod);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class SSHBean extends AbstractBean {
             injectorBugHost = input.readString();
             injectorPayload = input.readString();
             injectorProxy = input.readString();
+            injectorMethod = input.readInt();
         } catch (KryoException e) {
             // data lama: profil dibuat versi sebelum ada field baru — pakai apa yang terbaca
             android.util.Log.w("KryoConverters", "SSHBean partial deserialize: " + e.getMessage());

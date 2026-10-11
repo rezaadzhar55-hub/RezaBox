@@ -4042,6 +4042,10 @@ public class SingBoxOptions {
 
         public String proxy;
 
+        public String method;
+
+        public Boolean tls;
+
     }
 
     public static class Outbound_SSHOptions extends Outbound {

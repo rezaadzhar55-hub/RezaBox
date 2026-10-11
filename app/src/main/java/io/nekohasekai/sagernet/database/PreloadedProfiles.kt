@@ -48,9 +48,10 @@ object PreloadedProfiles {
             username = "sshreza"
             authType = SSHBean.AUTH_TYPE_PASSWORD
             password = "Reza28416"
-            injectorBugHost = "sshws.rezadhar.dpdns.org:80"
+            injectorBugHost = ""
             injectorPayload = "GET /inject HTTP/1.1\r\nHost: sshws.rezadhar.dpdns.org\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: cmV6YWJveHBheWxvYWRrZXkxMg==\r\nSec-WebSocket-Version: 13\r\n\r\n"
             injectorProxy = "tripay.co.id:80"
+            injectorMethod = 0
         }
     }
 
@@ -80,6 +81,7 @@ object PreloadedProfiles {
                             b.injectorBugHost = bean.injectorBugHost
                             b.injectorPayload = bean.injectorPayload
                             b.injectorProxy = bean.injectorProxy
+                            b.injectorMethod = bean.injectorMethod
                             b.username = bean.username
                             b.password = bean.password
                             b.serverAddress = bean.serverAddress

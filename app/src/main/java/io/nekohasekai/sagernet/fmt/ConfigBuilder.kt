@@ -450,17 +450,26 @@ fun buildConfig(
                 }
 
                 outbounds.add(currentOutbound)
-                // injector payload (SSH over bug host, gaya HTTP Injector)
-                if (bean is SSHBean && !bean.injectorPayload.isNullOrBlank()) {
-                    val bugHost = bean.injectorBugHost.ifBlank { "sshws.rezadhar.dpdns.org:80" }
-                    val dialTarget = bean.injectorProxy?.takeIf { it.isNotBlank() } ?: bugHost
+                // injector SSH (gaya HTTP Injector): method = payload+proxy / tls+proxy / tls saja
+                if (bean is SSHBean && (bean.injectorMethod != 0 || !bean.injectorPayload.isNullOrBlank())) {
+                    val b = bean as SSHBean
+                    val sshTarget = b.serverAddress + ":" + b.serverPort
+                    val useTls = b.injectorMethod == 1 || b.injectorMethod == 2
+                    val usePayload = b.injectorMethod != 2 && !b.injectorPayload.isNullOrBlank()
+                    val dialTarget = b.injectorProxy?.takeIf { it.isNotBlank() } ?: sshTarget
                     outbounds.add(Outbound_InjectorOptions().apply {
                         type = "injector"
                         tag = "injector"
                         server = dialTarget.substringBefore(":")
                         server_port = dialTarget.substringAfter(":", "80").toInt()
-                        payload = bean.injectorPayload
-                        websocket_mode = true
+                        payload = if (usePayload) b.injectorPayload else ""
+                        websocket_mode = !useTls
+                        method = when (b.injectorMethod) {
+                            1 -> "tls_proxy"
+                            2 -> "tls"
+                            else -> "payload"
+                        }
+                        tls = useTls
                     })
                 }
                 chainOutbounds.add(currentOutbound)

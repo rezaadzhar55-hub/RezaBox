@@ -56,10 +56,13 @@
             app:title="@string/ssh_public_key"
             app:useSimpleSummaryProvider="true" />
 
-        <EditTextPreference
+        <ListPreference
             app:icon="@drawable/ic_hardware_router"
-            app:key="sshInjectorBugHost"
-            app:title="Bug Host (host:port)"
+            app:key="sshInjectorMethod"
+            app:title="Metode Injector"
+            app:entries="@array/injector_methods"
+            app:entryValues="@array/injector_method_values"
+            app:defaultValue="0"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
