@@ -47,6 +47,13 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     private fun getColorForLine(line: String): ForegroundColorSpan {
         var color = ForegroundColorSpan(Color.GRAY)
         when {
+            // log gaya HTTP Injector
+            line.contains("[PING]") -> color = ForegroundColorSpan((0xFF1E90FF).toInt()) // biru
+            line.contains("101 Switching Protocols") || line.contains("200 Connection established") ||
+                line.contains("Terhubung") || line.contains("handshake ok") ||
+                line.contains("Accepted password") -> color = ForegroundColorSpan((0xFF00B36B).toInt()) // hijau
+            line.contains("Sidik jari") || line.contains("Local IP") ->
+                color = ForegroundColorSpan((0xFF00B36B).toInt())
             line.contains("INFO[") || line.contains(" [Info]") -> {
                 color = ForegroundColorSpan((0xFF86C166).toInt())
             }
