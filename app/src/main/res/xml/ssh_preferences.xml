@@ -67,6 +67,12 @@
             app:key="sshInjectorPayload"
             app:title="Payload (HTTP request)"
             app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:icon="@drawable/ic_baseline_swap_horiz_24"
+            app:key="sshInjectorProxy"
+            app:title="Remote Proxy (host:port)"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
 

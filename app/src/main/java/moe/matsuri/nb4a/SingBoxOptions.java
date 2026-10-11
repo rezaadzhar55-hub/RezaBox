@@ -4040,6 +4040,8 @@ public class SingBoxOptions {
 
         public Boolean websocket_mode;
 
+        public String proxy;
+
     }
 
     public static class Outbound_SSHOptions extends Outbound {

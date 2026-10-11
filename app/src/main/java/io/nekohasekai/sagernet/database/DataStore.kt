@@ -196,6 +196,7 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var serverCertificates by profileCacheStore.string(Key.SERVER_CERTIFICATES)
     var sshInjectorBugHost by profileCacheStore.string(Key.SSH_INJECTOR_BUGHOST)
     var sshInjectorPayload by profileCacheStore.string(Key.SSH_INJECTOR_PAYLOAD)
+    var sshInjectorProxy by profileCacheStore.string(Key.SSH_INJECTOR_PROXY)
     var serverMTU by profileCacheStore.stringToInt(Key.SERVER_MTU)
     var serverHeaders by profileCacheStore.string(Key.SERVER_HEADERS)
     var serverAllowInsecure by profileCacheStore.boolean(Key.SERVER_ALLOW_INSECURE)

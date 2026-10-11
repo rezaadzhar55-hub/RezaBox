@@ -91,6 +91,7 @@ object Key {
     const val SERVER_CERTIFICATES = "serverCertificates"
     const val SSH_INJECTOR_BUGHOST = "sshInjectorBugHost"
     const val SSH_INJECTOR_PAYLOAD = "sshInjectorPayload"
+    const val SSH_INJECTOR_PROXY = "sshInjectorProxy"
     const val SERVER_MTU = "serverMTU"
 
     const val SERVER_CONFIG = "serverConfig"

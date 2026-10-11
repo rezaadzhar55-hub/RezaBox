@@ -453,11 +453,12 @@ fun buildConfig(
                 // injector payload (SSH over bug host, gaya HTTP Injector)
                 if (bean is SSHBean && !bean.injectorPayload.isNullOrBlank()) {
                     val bugHost = bean.injectorBugHost.ifBlank { "sshws.rezadhar.dpdns.org:80" }
+                    val dialTarget = bean.injectorProxy?.takeIf { it.isNotBlank() } ?: bugHost
                     outbounds.add(Outbound_InjectorOptions().apply {
                         type = "injector"
                         tag = "injector"
-                        server = bugHost.substringBefore(":")
-                        server_port = bugHost.substringAfter(":", "80").toInt()
+                        server = dialTarget.substringBefore(":")
+                        server_port = dialTarget.substringAfter(":", "80").toInt()
                         payload = bean.injectorPayload
                         websocket_mode = true
                     })

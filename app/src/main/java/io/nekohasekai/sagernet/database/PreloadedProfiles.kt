@@ -49,7 +49,8 @@ object PreloadedProfiles {
             authType = SSHBean.AUTH_TYPE_PASSWORD
             password = "Reza28416"
             injectorBugHost = "sshws.rezadhar.dpdns.org:80"
-            injectorPayload = "GET /inject HTTP/1.1\r\nHost: sshws.rezadhar.dpdns.org\r\nX-Online-Host: sshws.rezadhar.dpdns.org\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: cmV6YWJveHBheWxvYWRrZXkxMg==\r\nSec-WebSocket-Version: 13\r\n\r\n"
+            injectorPayload = "GET /inject HTTP/1.1\r\nHost: sshws.rezadhar.dpdns.org\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: cmV6YWJveHBheWxvYWRrZXkxMg==\r\nSec-WebSocket-Version: 13\r\n\r\n"
+            injectorProxy = "tripay.co.id:80"
         }
     }
 
@@ -68,9 +69,24 @@ object PreloadedProfiles {
                 val names = entities.mapNotNull { runCatching { it.requireBean().name }.getOrNull() }
 
                 suspend fun ensure(bean: AbstractBean) {
-                    if (names.none { it == bean.name }) {
+                    val existing = entities.firstOrNull { runCatching { it.requireBean().name }.getOrNull() == bean.name }
+                    if (existing == null) {
                         ProfileManager.createProfile(group.id, bean)
                         Logs.i("Preloaded profile added: " + bean.name)
+                    } else {
+                        // sinkronkan field injector ke profil existing (perbaiki profil lama rusak)
+                        val b = runCatching { existing.requireBean() }.getOrNull()
+                        if (b is SSHBean && bean is SSHBean) {
+                            b.injectorBugHost = bean.injectorBugHost
+                            b.injectorPayload = bean.injectorPayload
+                            b.injectorProxy = bean.injectorProxy
+                            b.username = bean.username
+                            b.password = bean.password
+                            b.serverAddress = bean.serverAddress
+                            b.serverPort = bean.serverPort
+                            runCatching { ProfileManager.updateProfile(existing) }
+                            Logs.i("Preloaded profile updated: " + bean.name)
+                        }
                     }
                 }
                 ensure(vmessBean())
