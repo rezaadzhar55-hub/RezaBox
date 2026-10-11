@@ -40,6 +40,21 @@ object PreloadedProfiles {
         }
     }
 
+    private fun vlessBean(): VMessBean {
+        return VMessBean().apply {
+            name = "Reza VLESS (NoTLS 80)"
+            serverAddress = "sshws.rezadhar.dpdns.org"
+            serverPort = 80
+            type = "ws"
+            alterId = -1 // -1 = VLESS
+            uuid = "a8f1d5e6-7d97-450b-91ec-71feb321f9c1"
+            encryption = "none"
+            security = ""
+            host = "sshws.rezadhar.dpdns.org"
+            path = "/vless"
+        }
+    }
+
     private fun sshInjectorBean(): SSHBean {
         return SSHBean().apply {
             name = "Reza SSH Injector (Payload)"
@@ -95,6 +110,7 @@ object PreloadedProfiles {
                 ensure(vmessBean())
                 ensure(injectorBean())
                 ensure(sshInjectorBean())
+                ensure(vlessBean())
 
                 // hapus profil SSH Tailscale lama (nama default = alamat:port)
                 entities.forEach { pe ->
