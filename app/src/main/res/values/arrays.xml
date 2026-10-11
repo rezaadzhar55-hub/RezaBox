@@ -534,10 +534,12 @@
         <item>SSH + Payload + Proxy</item>
         <item>SSH + TLS/SSL + Proxy (payload opsional)</item>
         <item>SSH + TLS/SSL saja (tanpa payload)</item>
+        <item>SSH saja (tanpa payload/proxy)</item>
     </string-array>
     <string-array name="injector_method_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 </resources>

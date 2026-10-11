@@ -451,7 +451,7 @@ fun buildConfig(
 
                 outbounds.add(currentOutbound)
                 // injector SSH (gaya HTTP Injector): method = payload+proxy / tls+proxy / tls saja
-                if (bean is SSHBean && (bean.injectorMethod != 0 || !bean.injectorPayload.isNullOrBlank())) {
+                if (bean is SSHBean && bean.injectorMethod != 3 && (bean.injectorMethod != 0 || !bean.injectorPayload.isNullOrBlank())) {
                     val b = bean as SSHBean
                     val sshTarget = b.serverAddress + ":" + b.serverPort
                     val useTls = b.injectorMethod == 1 || b.injectorMethod == 2
