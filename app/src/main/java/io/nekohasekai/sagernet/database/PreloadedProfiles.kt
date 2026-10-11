@@ -65,7 +65,7 @@ object PreloadedProfiles {
                 val entities = SagerDatabase.proxyDao.getByGroup(group.id)
                 val names = entities.mapNotNull { runCatching { it.requireBean().name }.getOrNull() }
 
-                fun ensure(bean: AbstractBean) {
+                suspend fun ensure(bean: AbstractBean) {
                     if (names.none { it == bean.name }) {
                         ProfileManager.createProfile(group.id, bean)
                         Logs.i("Preloaded profile added: " + bean.name)
