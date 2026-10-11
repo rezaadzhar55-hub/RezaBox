@@ -28,6 +28,11 @@ object PingWorker {
         val target = DataStore.pingTarget
         stop()
         job = scope.launch {
+            // log tipe HP gaya HI (info device)
+            Logs.i(
+                "[PING] Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} " +
+                    "(Android ${android.os.Build.VERSION.RELEASE}, ${android.os.Build.SUPPORTED_ABIS[0]})"
+            )
             // log IP lokal gaya HI
             try {
                 val localIp = java.net.NetworkInterface.getNetworkInterfaces().asSequence()
