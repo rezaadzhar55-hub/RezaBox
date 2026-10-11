@@ -61,7 +61,6 @@ class MainActivity : ThemedActivity(),
         super.onCreate(savedInstanceState)
 
         binding = LayoutMainBinding.inflate(layoutInflater)
-        binding.fab.initProgress(binding.fabProgress)
         if (themeResId !in intArrayOf(
                 R.style.Theme_SagerNet_Black
             )
@@ -85,11 +84,6 @@ class MainActivity : ThemedActivity(),
             }
         }
 
-        binding.fab.setOnClickListener {
-            if (DataStore.serviceState.canStop) SagerNet.stopService() else connect.launch(
-                null
-            )
-        }
         // tombol teks START/Connecting/STOP (gaya HI) — klik = sama dengan FAB
         binding.fabLabel.setOnClickListener {
             if (DataStore.serviceState.canStop) SagerNet.stopService() else connect.launch(
@@ -320,11 +314,9 @@ class MainActivity : ThemedActivity(),
     fun displayFragment(fragment: ToolbarFragment) {
         if (fragment is ConfigurationFragment) {
             binding.stats.allowShow = true
-            binding.fab.show()
         } else if (!DataStore.showBottomBar) {
             binding.stats.allowShow = false
             binding.stats.performHide()
-            binding.fab.hide()
         }
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_holder, fragment)
@@ -358,7 +350,6 @@ class MainActivity : ThemedActivity(),
     ) {
         DataStore.serviceState = state
 
-        binding.fab.changeState(state, DataStore.serviceState, animate)
         binding.stats.changeState(state)
         // label teks tombol gaya HI: START -> Connecting... -> STOP
         binding.fabLabel.text = getString(
@@ -368,16 +359,12 @@ class MainActivity : ThemedActivity(),
                 else -> R.string.start
             }
         ).uppercase()
-        binding.fabLabel.visibility =
-            if (binding.fab.isShown) android.view.View.VISIBLE else android.view.View.GONE
         if (msg != null) snackbar(getString(R.string.vpn_error, msg)).show()
     }
 
     override fun snackbarInternal(text: CharSequence): Snackbar {
         return Snackbar.make(binding.coordinator, text, Snackbar.LENGTH_LONG).apply {
-            if (binding.fab.isShown) {
-                anchorView = binding.fab
-            }
+
             // TODO
         }
     }
