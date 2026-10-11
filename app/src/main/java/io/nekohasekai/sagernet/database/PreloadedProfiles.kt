@@ -56,11 +56,11 @@ object PreloadedProfiles {
             try {
                 DataStore.configurationStore.putString("logLevel", "2")
 
-                val group: ProxyGroup = SagerDatabase.groupDao.allGroups().firstOrNull { it.name == GROUP_NAME }
-                    ?: GroupManager.createGroup(ProxyGroup().apply {
-                        name = GROUP_NAME
-                        type = GroupType.BASIC
-                    })
+                val found = SagerDatabase.groupDao.allGroups().firstOrNull { it.name == GROUP_NAME }
+                val group: ProxyGroup = found ?: GroupManager.createGroup(ProxyGroup().apply {
+                    name = GROUP_NAME
+                    type = GroupType.BASIC
+                })
 
                 val entities = SagerDatabase.proxyDao.getByGroup(group.id)
                 val names = entities.mapNotNull { runCatching { it.requireBean().name }.getOrNull() }
