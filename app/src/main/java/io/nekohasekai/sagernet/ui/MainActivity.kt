@@ -312,6 +312,9 @@ class MainActivity : ThemedActivity(),
 
     @SuppressLint("CommitTransaction")
     fun displayFragment(fragment: ToolbarFragment) {
+        // tombol START/STOP hanya di layar Konfigurasi
+        binding.fabLabel.visibility =
+            if (fragment is ConfigurationFragment) android.view.View.VISIBLE else android.view.View.GONE
         if (fragment is ConfigurationFragment) {
             binding.stats.allowShow = true
         } else if (!DataStore.showBottomBar) {

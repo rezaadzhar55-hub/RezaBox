@@ -70,9 +70,29 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     }
 
     private fun reloadSession() {
-        val span = SpannableString(
-            String(SendLog.getNekoLog(50 * 1024))
-        )
+        // rapikan log gaya HI: buang noise DNS/packet, ringkas format
+        val rawLines = String(SendLog.getNekoLog(50 * 1024)).lines()
+        val sb = StringBuilder()
+        for (line in rawLines) {
+            val l = line.trim()
+            // skip noise: DNS packet, fakeip, geoip extract, GC, chatty
+            if (l.isEmpty()) continue
+            if (l.contains("inbound packet connection") && l.contains(":53")) continue
+            if (l.contains("Extract geoip") || l.contains("Extract >>")) continue
+            if (l.contains("Rejecting re-init") || l.contains("NoClassDefFoundError")) continue
+            if (l.contains("chatty")) continue
+            if (l.contains("Accessing hidden")) continue
+            // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
+            var out = l
+            val t = Regex("^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) ").find(l)
+            if (t != null) out = l.substring(t.range.last + 1)
+            // ringkas INFO[0000] -> hilangkan padding
+            out = out.replace(Regex("INFO\[\d+\] "), "")
+            out = out.replace(Regex("ERROR\[\d+\] "), "ERROR: ")
+            out = out.replace(Regex("WARN\[\d+\] "), "WARN: ")
+            sb.appendLine(out)
+        }
+        val span = SpannableString(sb.toString())
         var offset = 0
         for (line in span.lines()) {
             val color = getColorForLine(line)
