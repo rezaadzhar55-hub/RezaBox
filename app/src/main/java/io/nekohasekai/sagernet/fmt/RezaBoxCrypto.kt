@@ -58,6 +58,41 @@ object RezaBoxCrypto {
         return String(cipher.doFinal(ct), Charsets.UTF_8)
     }
 
+    /** Tanpa PIN: file tetap format .rz (tidak terbuka di text editor), isi hanya di-obfuscate (b64). */
+    fun exportNoPin(json: String): String {
+        val meta = org.json.JSONObject()
+            .put("nopin", true)
+            .put("d", Base64.encodeToString(json.toByteArray(Charsets.UTF_8), Base64.NO_WRAP))
+        return MAGIC + Base64.encodeToString(
+            meta.toString().toByteArray(Charsets.UTF_8),
+            Base64.URL_SAFE or Base64.NO_WRAP
+        )
+    }
+
+    /** return (json, butuhPin) */
+    fun peek(content: String): Pair<Boolean, Boolean> {
+        // (isRezaBox, needsPin)
+        if (!isRezaBoxFile(content)) return Pair(false, false)
+        return try {
+            val raw = content.trim().removePrefix(MAGIC)
+            val meta = org.json.JSONObject(
+                String(Base64.decode(raw, Base64.URL_SAFE or Base64.NO_WRAP), Charsets.UTF_8)
+            )
+            Pair(true, !meta.optBoolean("nopin", false))
+        } catch (e: Exception) {
+            Pair(true, true)
+        }
+    }
+
+    fun decryptNoPin(content: String): String {
+        val raw = content.trim().removePrefix(MAGIC)
+        val meta = org.json.JSONObject(
+            String(Base64.decode(raw, Base64.URL_SAFE or Base64.NO_WRAP), Charsets.UTF_8)
+        )
+        require(meta.optBoolean("nopin", false)) { "not a nopin file" }
+        return String(Base64.decode(meta.getString("d"), Base64.NO_WRAP), Charsets.UTF_8)
+    }
+
     fun isRezaBoxFile(content: String): Boolean = content.trim().startsWith(MAGIC)
 
     private fun derive(pin: String, salt: ByteArray): ByteArray =

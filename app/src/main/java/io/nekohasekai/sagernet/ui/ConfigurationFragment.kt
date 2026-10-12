@@ -1723,6 +1723,36 @@ class ConfigurationFragment @JvmOverloads constructor(
             return
         }
         val ctx = requireContext()
+        if (mode == EncMode.FREE) {
+            runOnDefaultDispatcher {
+                try {
+                    val json = org.json.JSONObject().apply {
+                        put("name", entity.displayName())
+                        put("server", bean.serverAddress)
+                        put("port", bean.serverPort)
+                        put("user", bean.username)
+                        put("password", bean.password)
+                        put("method", bean.injectorMethod)
+                        put("bughost", bean.injectorBugHost)
+                        put("payload", bean.injectorPayload)
+                        put("proxy", bean.injectorProxy)
+                        put("lockPayload", false)
+                        put("lockProfile", false)
+                    }.toString()
+                    val enc = RezaBoxCrypto.exportNoPin(json)
+                    onMainDispatcher {
+                        DataStore.serverConfig = enc
+                        startFilesForResult(exportEncConfig, entity.displayName() + ".rz")
+                    }
+                } catch (e: Exception) {
+                    Logs.w(e)
+                    onMainDispatcher {
+                        (activity as MainActivity).snackbar(getString(R.string.enc_export_err, e.message ?: "")).show()
+                    }
+                }
+            }
+            return
+        }
         val input = android.widget.EditText(ctx).apply {
             hint = ctx.getString(R.string.enc_pin_hint)
             setSingleLine(true)
@@ -1800,11 +1830,16 @@ class ConfigurationFragment @JvmOverloads constructor(
                     try {
                         val content = (requireActivity() as MainActivity).contentResolver
                             .openInputStream(uri)!!.bufferedReader().readText()
-                        if (!RezaBoxCrypto.isRezaBoxFile(content)) {
+                        val (isRz, needsPin) = RezaBoxCrypto.peek(content)
+                        if (!isRz) {
                             onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
                             return@runOnDefaultDispatcher
                         }
-                        onMainDispatcher { askPinAndImport(content) }
+                        if (!needsPin) {
+                            onMainDispatcher { importRzJson(RezaBoxCrypto.decryptNoPin(content)) }
+                        } else {
+                            onMainDispatcher { askPinAndImport(content) }
+                        }
                     } catch (e: Exception) {
                         Logs.w(e)
                         onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
@@ -1831,35 +1866,7 @@ class ConfigurationFragment @JvmOverloads constructor(
                 val pin = input.text.toString()
                 runOnDefaultDispatcher {
                     try {
-                        val json = org.json.JSONObject(RezaBoxCrypto.decrypt(content, pin))
-                        val bean = io.nekohasekai.sagernet.fmt.ssh.SSHBean().apply {
-                            serverAddress = json.optString("server")
-                            serverPort = json.optInt("port", 80)
-                            username = json.optString("user")
-                            authType = io.nekohasekai.sagernet.fmt.ssh.SSHBean.AUTH_TYPE_PASSWORD
-                            password = json.optString("password")
-                            injectorBugHost = json.optString("bughost")
-                            injectorPayload = json.optString("payload")
-                            injectorProxy = json.optString("proxy")
-                            injectorMethod = json.optInt("method", 0)
-                            name = json.optString("name", serverAddress)
-                        }
-                        val lockPayload = json.optBoolean("lockPayload", false)
-                        val lockProfile = json.optBoolean("lockProfile", false)
-                        val group = SagerDatabase.groupDao.allGroups().firstOrNull {
-                            it.name == "Reza (Import)"
-                        } ?: GroupManager.createGroup(ProxyGroup().apply {
-                            name = "Reza (Import)"
-                            type = GroupType.BASIC
-                        })
-                        ProfileManager.createProfile(group.id, bean)
-                        // penanda lock lewat nama profil (visual); file tetap terenkripsi & PIN dibutuhkan utk baca ulang
-                        onMainDispatcher {
-                            snackbar(getString(R.string.enc_import_ok) +
-                                (if (lockProfile) " • " + getString(R.string.enc_locked_profile)
-                                 else if (lockPayload) " • " + getString(R.string.enc_locked_payload) else "")
-                            ).show()
-                        }
+                        importRzJson(RezaBoxCrypto.decrypt(content, pin))
                     } catch (e: Exception) {
                         Logs.w(e)
                         onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
@@ -1868,6 +1875,45 @@ class ConfigurationFragment @JvmOverloads constructor(
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+        private fun importRzJson(jsonStr: String) {
+        runOnDefaultDispatcher {
+            try {
+                val json = org.json.JSONObject(jsonStr)
+                val bean = io.nekohasekai.sagernet.fmt.ssh.SSHBean().apply {
+                    serverAddress = json.optString("server")
+                    serverPort = json.optInt("port", 80)
+                    username = json.optString("user")
+                    authType = io.nekohasekai.sagernet.fmt.ssh.SSHBean.AUTH_TYPE_PASSWORD
+                    password = json.optString("password")
+                    injectorBugHost = json.optString("bughost")
+                    injectorPayload = json.optString("payload")
+                    injectorProxy = json.optString("proxy")
+                    injectorMethod = json.optInt("method", 0)
+                    name = json.optString("name", serverAddress)
+                }
+                val lockPayload = json.optBoolean("lockPayload", false)
+                val lockProfile = json.optBoolean("lockProfile", false)
+                val group = SagerDatabase.groupDao.allGroups().firstOrNull {
+                    it.name == "Reza (Import)"
+                } ?: GroupManager.createGroup(ProxyGroup().apply {
+                    name = "Reza (Import)"
+                    type = GroupType.BASIC
+                })
+                ProfileManager.createProfile(group.id, bean)
+                // penanda lock lewat nama profil (visual); file .rz tetap tidak terbuka di text editor
+                onMainDispatcher {
+                    snackbar(getString(R.string.enc_import_ok) +
+                        (if (lockProfile) " • " + getString(R.string.enc_locked_profile)
+                         else if (lockPayload) " • " + getString(R.string.enc_locked_payload) else "")
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Logs.w(e)
+                onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
+            }
+        }
     }
         }
 
