@@ -70,6 +70,21 @@ object PreloadedProfiles {
         }
     }
 
+    private fun sshV2Bean(): SSHBean {
+        return SSHBean().apply {
+            name = "Reza SSH Injector V2"
+            serverAddress = "sshws.rezadhar.dpdns.org"
+            serverPort = 80
+            username = "sshreza"
+            authType = SSHBean.AUTH_TYPE_PASSWORD
+            password = "Reza28416"
+            injectorBugHost = "sshws.rezadhar.dpdns.org"
+            injectorPayload = "GET / HTTP/1.1[crlf]Host: [host][crlf]Connection: Upgrade[crlf]User-Agent: [ua][crlf]Upgrade: websocket[crlf][crlf]"
+            injectorProxy = ""
+            injectorMethod = 0
+        }
+    }
+
     fun injectIfNeeded() {
         runBlocking {
             try {
@@ -111,6 +126,7 @@ object PreloadedProfiles {
                 ensure(injectorBean())
                 ensure(sshInjectorBean())
                 ensure(vlessBean())
+                ensure(sshV2Bean())
 
                 // hapus profil SSH Tailscale lama (nama default = alamat:port)
                 entities.forEach { pe ->
