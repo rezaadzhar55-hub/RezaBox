@@ -51,14 +51,19 @@ object PingWorker {
                     val conn = URL(target).openConnection() as HttpURLConnection
                     conn.connectTimeout = 10000
                     conn.readTimeout = 10000
-                    conn.setRequestProperty("User-Agent", "RezaBox")
+                    conn.setRequestProperty("User-Agent", "Ezbox Tunnel")
                     conn.requestMethod = "GET"
                     val code = conn.responseCode
                     val ms = System.currentTimeMillis() - start
                     conn.inputStream.close()
-                    Logs.i("[PING] Ping: $code ($ms ms)")
+                    val quality = when {
+                        ms < 200 -> "BAGUS"
+                        ms < 500 -> "SEDANG"
+                        else -> "LAMBAT"
+                    }
+                    Logs.i("[PING] Ping: $ms ms ($quality)")
                 } catch (e: Exception) {
-                    Logs.i("[PING] Ping: gagal (${e.message})")
+                    Logs.i("[PING] Ping: gagal (TIMEOUT)")
                 }
             }
         }

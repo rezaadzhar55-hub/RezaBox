@@ -133,7 +133,16 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
         var color = ForegroundColorSpan(Color.GRAY)
         when {
             // log gaya HTTP Injector
-            line.contains("[PING]") -> color = ForegroundColorSpan((0xFF1E90FF).toInt()) // biru
+            line.contains("[PING]") -> {
+                val ms = Regex("Ping: (\\d+) ms").find(line)?.group(1)?.toIntOrNull()
+                when {
+                    ms == null && line.contains("gagal") -> color = ForegroundColorSpan(Color.RED)
+                    ms == null -> color = ForegroundColorSpan((0xFF1E90FF).toInt()) // biru (info ping)
+                    ms < 200 -> color = ForegroundColorSpan((0xFF00B36B).toInt()) // hijau
+                    ms < 500 -> color = ForegroundColorSpan((0xFFFFC107).toInt()) // kuning
+                    else -> color = ForegroundColorSpan(Color.RED)
+                }
+            }
             line.contains("101 Switching Protocols") || line.contains("200 Connection established") ||
                 line.contains("Connected") || line.contains("Accepted password") ||
                 line.contains("Accepted password") -> color = ForegroundColorSpan((0xFF00B36B).toInt()) // hijau
