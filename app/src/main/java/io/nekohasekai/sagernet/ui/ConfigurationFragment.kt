@@ -1713,11 +1713,9 @@ class ConfigurationFragment @JvmOverloads constructor(
             }
         }
 
-    }
+        private enum class EncMode { SSH_ONLY, PAYLOAD_ONLY, SSH_PAYLOAD, NONE }
 
-    private enum class EncMode { SSH_ONLY, PAYLOAD_ONLY, SSH_PAYLOAD, NONE }
-
-    private fun encExport(entity: ProxyEntity, mode: EncMode, presetKey: String?) {
+        private fun encExport(entity: ProxyEntity, mode: EncMode, presetKey: String?) {
         val bean = entity.sshBean ?: run {
             (activity as MainActivity).snackbar("Hanya profil SSH yang didukung").show()
             return
@@ -1775,7 +1773,7 @@ class ConfigurationFragment @JvmOverloads constructor(
         }
     }
 
-    private val exportEncConfig =
+        private val exportEncConfig =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) { data ->
             if (data != null) {
                 runOnDefaultDispatcher {
@@ -1793,6 +1791,8 @@ class ConfigurationFragment @JvmOverloads constructor(
                 }
             }
         }
+
+    }
 
     private val exportConfig =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) { data ->
