@@ -166,6 +166,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("Accessing hidden")) continue
             // sembunyikan baris tag internal [Info]/[Debug]/[Warning] [BaseService$Interface$...] dll
             if (l.contains("Ping: aktif (interval") || l.contains("[PingWorker")) continue
+            // header tag outbound/inbound dari sing-box (outbound/injector[injector]: dst)
+            if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
             if (l.contains("[BaseService") || l.contains("Interface$") ||
                 l.contains("[Info] [") || l.contains("[Debug] [") ||
                 l.contains("[Warning] [") || l.contains("[Error] [")) {
