@@ -43,9 +43,9 @@ object PingWorker {
             } catch (e: Exception) {
                 Logs.i("[PING] Local IP: gagal deteksi")
             }
-            Logs.i("[PING] Ping: aktif (interval ${interval}s -> $target)")
+            Logs.i("[PING] Ping: aktif (target: $target)")
             while (isActive) {
-                delay(interval * 1000L)
+                // ping PERTAMA langsung tanpa menunggu interval (muncul saat Connected)
                 try {
                     val start = System.currentTimeMillis()
                     val conn = URL(target).openConnection() as HttpURLConnection
@@ -65,6 +65,7 @@ object PingWorker {
                 } catch (e: Exception) {
                     Logs.i("[PING] Ping: gagal (TIMEOUT)")
                 }
+                delay(interval * 1000L)
             }
         }
     }
