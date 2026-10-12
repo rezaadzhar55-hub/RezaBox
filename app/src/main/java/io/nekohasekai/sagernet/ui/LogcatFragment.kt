@@ -132,7 +132,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             // ringkas INFO[0000] -> hilangkan padding
             out = out.replace(Regex("""INFO\[\d+\] """), "")
             out = out.replace(Regex("""ERROR\[\d+\] """), "ERROR: ")
-            out = out.replace(Regex("WARN\[\d+\] "), "WARN: ")
+            out = out.replace(Regex("""WARN\[\d+\] """), "WARN: ")
             sb.appendLine(out)
         }
         val span = SpannableString(sb.toString())
