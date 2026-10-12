@@ -51,6 +51,45 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
 
         reloadSession()
         startAutoRefresh()
+        logDeviceInfoOnce()
+    }
+
+    // info device/IP/jaringan langsung muncul saat Log dibuka (tanpa perlu start VPN)
+    private fun logDeviceInfoOnce() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            runCatching {
+                val cm = io.nekohasekai.sagernet.SagerNet.connectivity
+                val net = cm.activeNetwork
+                val caps = net?.let { cm.getNetworkCapabilities(it) }
+                val netType = when {
+                    caps == null -> "UNKNOWN"
+                    caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
+                    caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR) -> "SELULER"
+                    else -> "LAIN"
+                }
+                // operator (untuk seluler)
+                var operator = ""
+                if (netType == "SELULER") {
+                    runCatching {
+                        val tm = requireContext().getSystemService(android.telephony.TelephonyManager::class.java)
+                        operator = tm?.networkOperatorName?.takeIf { it.isNotBlank() } ?: ""
+                    }
+                }
+                val lp = net?.let { cm.getLinkProperties(it) }
+                val localIp = lp?.linkAddresses?.firstOrNull {
+                    it.address is java.net.Inet4Address
+                }?.address?.hostAddress
+                val lines = listOf(
+                    "Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} (Android ${android.os.Build.VERSION.RELEASE}, ${android.os.Build.SUPPORTED_ABIS[0]})",
+                    "App version: ${io.nekohasekai.sagernet.BuildConfig.VERSION_NAME}",
+                    "Status Jaringan: ${if (caps != null) "CONNECTED" else "PUTUS"} to $netType${if (operator.isNotBlank()) " ($operator)" else ""}",
+                    "Local IP: ${localIp ?: "-"}",
+                )
+                withContext(Dispatchers.Main) {
+                    binding.textview.text = lines.joinToString("\n") + "\n\n" + binding.textview.text
+                }
+            }
+        }
     }
 
     // auto-refresh: log baru muncul otomatis tanpa tekan refresh
