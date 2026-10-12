@@ -19,10 +19,11 @@ popd
 ####
 
 if [ ! -d "libneko" ]; then
-  git clone --no-checkout https://github.com/MatsuriDayo/libneko.git
+  git clone --no-checkout -b main https://github.com/rezaadzhar55-hub/libneko.git
 fi
 pushd libneko
-git checkout "$COMMIT_LIBNEKO"
+git fetch origin main || true
+git checkout -q FETCH_HEAD || git checkout "$COMMIT_LIBNEKO"
 popd
 
 ####

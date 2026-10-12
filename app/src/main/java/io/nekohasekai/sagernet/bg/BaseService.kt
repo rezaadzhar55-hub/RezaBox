@@ -242,6 +242,7 @@ class BaseService {
             this as Service
 
             data.changeState(State.Stopping)
+            Logs.i("[BERHENTI] layanan diminta")
 
             runOnMainDispatcher {
                 data.connectingJob?.cancelAndJoin() // ensure stop connecting first
@@ -257,6 +258,7 @@ class BaseService {
                 }
 
                 // change the state
+                Logs.i("[VPN] Terputus")
                 data.changeState(State.Stopped, msg)
                 // stop the service if nothing has bound to it
                 if (restart) startRunner() else {
@@ -273,6 +275,25 @@ class BaseService {
         var upstreamInterfaceName: String?
 
         suspend fun preInit() {
+            // info device + jaringan gaya HTTP Injector
+            runCatching {
+                val cm = SagerNet.connectivity
+                val net = cm.activeNetwork
+                val caps = net?.let { cm.getNetworkCapabilities(it) }
+                val netType = when {
+                    caps == null -> "UNKNOWN"
+                    caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
+                    caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR) -> "CELLULAR"
+                    else -> "OTHER"
+                }
+                val lp = net?.let { cm.getLinkProperties(it) }
+                val localIp = lp?.linkAddresses?.firstOrNull {
+                    it.address is java.net.Inet4Address
+                }?.address?.hostAddress
+                Logs.i("Status Jaringan: CONNECTED to $netType")
+                Logs.i("Local IP: ${localIp ?: "?"}")
+                Logs.i("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} (Android ${android.os.Build.VERSION.RELEASE})")
+            }
             DefaultNetworkListener.start(this) {
                 SagerNet.connectivity.getLinkProperties(it)?.also { link ->
                     SagerNet.underlyingNetwork = it
@@ -358,6 +379,8 @@ class BaseService {
             data.changeState(State.Connecting)
             runOnMainDispatcher {
                 try {
+                    Logs.i("[MULAI] layanan diminta")
+                    Logs.i("Memulai layanan tunnel: " + profile.displayName())
                     data.notification = createNotification(ServiceNotification.genTitle(profile))
 
                     Executable.killAll()    // clean up old processes
@@ -371,6 +394,7 @@ class BaseService {
                     }
 
                     startProcesses()
+                    Logs.i("[VPN] Terhubung")
                     data.changeState(State.Connected)
 
                     lateInit()
