@@ -1726,7 +1726,7 @@ class ConfigurationFragment @JvmOverloads constructor(
             runOnDefaultDispatcher {
                 try {
                     val json = org.json.JSONObject().apply {
-                        put("server", bean.server)
+                        put("server", bean.serverAddress)
                         put("port", bean.serverPort)
                         put("user", bean.username)
                         put("password", bean.password)
