@@ -190,7 +190,9 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("Ping: aktif (interval")) continue  // sembunyikan info interval, hasil ping tetap tampil
             // header tag outbound/inbound dari sing-box (outbound/injector[injector]: dst)
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
-            if (l.startsWith("sing-box started")) continue
+            if (l.contains("sing-box started")) continue
+            // baris tag-only dengan INFO[..] prefix (INFO[0000] outbound/ssh[proxy]:)
+            if (Regex("(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(l)) continue
             if (l.contains("[BaseService") || l.contains("Interface$") ||
                 l.contains("[Info] [") || l.contains("[Debug] [") ||
                 l.contains("[Warning] [") || l.contains("[Error] [")) {
