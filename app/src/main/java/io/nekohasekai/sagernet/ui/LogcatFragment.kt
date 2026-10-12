@@ -13,12 +13,20 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import io.nekohasekai.sagernet.R
 import io.nekohasekai.sagernet.databinding.LayoutLogcatBinding
 import io.nekohasekai.sagernet.ktx.*
 import io.nekohasekai.sagernet.widget.ListListener
 import libcore.Libcore
 import moe.matsuri.nb4a.utils.SendLog
+import io.nekohasekai.sagernet.SagerNet
+import java.io.File
 
 class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     Toolbar.OnMenuItemClickListener {
@@ -42,6 +50,41 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
         ViewCompat.setOnApplyWindowInsetsListener(binding.root, ListListener)
 
         reloadSession()
+        startAutoRefresh()
+    }
+
+    // auto-refresh: log baru muncul otomatis tanpa tekan refresh
+    private var autoRefreshJob: Job? = null
+    private var lastLen = -1
+
+    private fun startAutoRefresh() {
+        autoRefreshJob?.cancel()
+        autoRefreshJob = viewLifecycleOwner.lifecycleScope.launch {
+            while (true) {
+                delay(1000)
+                try {
+                    val len = withContext(Dispatchers.IO) {
+                        File(SagerNet.application.cacheDir, "neko.log").length()
+                    }
+                    if (len != lastLen) {
+                        lastLen = len
+                        withContext(Dispatchers.Main) { reloadSession() }
+                    }
+                } catch (ignored: Exception) {
+                }
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        autoRefreshJob?.cancel()
+        autoRefreshJob = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startAutoRefresh()
     }
 
     private fun getColorForLine(line: String): ForegroundColorSpan {
