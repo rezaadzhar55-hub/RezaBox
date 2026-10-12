@@ -54,7 +54,7 @@ import io.nekohasekai.sagernet.database.preference.OnPreferenceDataStoreChangeLi
 import io.nekohasekai.sagernet.databinding.LayoutProfileListBinding
 import io.nekohasekai.sagernet.databinding.LayoutProgressListBinding
 import io.nekohasekai.sagernet.fmt.AbstractBean
-import io.nekohasekai.sagernet.fmt.RezaBoxCrypto
+import io.nekohasekai.sagernet.fmt.EzboxCrypto
 import io.nekohasekai.sagernet.fmt.toUniversalLink
 import io.nekohasekai.sagernet.group.GroupUpdater
 import io.nekohasekai.sagernet.group.RawUpdater
@@ -1720,7 +1720,6 @@ class ConfigurationFragment @JvmOverloads constructor(
                 (activity as MainActivity).snackbar("Hanya profil SSH yang didukung").show()
                 return
             }
-            val ctx = requireContext()
             fun buildJson(): String = org.json.JSONObject().apply {
                 put("name", entity.displayName())
                 put("server", bean.serverAddress)
@@ -1734,58 +1733,20 @@ class ConfigurationFragment @JvmOverloads constructor(
                 put("lockPayload", mode != EncMode.FREE)
                 put("lockProfile", mode == EncMode.LOCK_PROFILE)
             }.toString()
-            if (mode == EncMode.FREE) {
-                runOnDefaultDispatcher {
-                    try {
-                        val enc = RezaBoxCrypto.exportNoPin(buildJson())
-                        onMainDispatcher {
-                            DataStore.serverConfig = enc
-                            startFilesForResult(exportEncConfig, entity.displayName() + ".rz")
-                        }
-                    } catch (e: Exception) {
-                        Logs.w(e)
-                        onMainDispatcher {
-                            (activity as MainActivity).snackbar(e.message ?: "gagal").show()
-                        }
+            runOnDefaultDispatcher {
+                try {
+                    val enc = EzboxCrypto.export(buildJson())
+                    onMainDispatcher {
+                        DataStore.serverConfig = enc
+                        startFilesForResult(exportEncConfig, entity.displayName() + ".rz")
+                    }
+                } catch (e: Exception) {
+                    Logs.w(e)
+                    onMainDispatcher {
+                        (activity as MainActivity).snackbar(e.message ?: "gagal").show()
                     }
                 }
-                return
             }
-            val input = android.widget.EditText(ctx).apply {
-                hint = ctx.getString(R.string.enc_pin_hint)
-                setSingleLine(true)
-            }
-            val pad = (18 * ctx.resources.displayMetrics.density).toInt()
-            val wrap = android.widget.FrameLayout(ctx).apply {
-                setPadding(pad, pad / 2, pad, 0)
-                addView(input)
-            }
-            MaterialAlertDialogBuilder(ctx)
-                .setTitle(R.string.enc_pin_title)
-                .setView(wrap)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    val pin = input.text.toString().trim()
-                    if (pin.length < 4) {
-                        (activity as MainActivity).snackbar("Kunci minimal 4 karakter").show()
-                        return@setPositiveButton
-                    }
-                    runOnDefaultDispatcher {
-                        try {
-                            val enc = RezaBoxCrypto.export(buildJson(), pin)
-                            onMainDispatcher {
-                                DataStore.serverConfig = enc
-                                startFilesForResult(exportEncConfig, entity.displayName() + ".rz")
-                            }
-                        } catch (e: Exception) {
-                            Logs.w(e)
-                            onMainDispatcher {
-                                (activity as MainActivity).snackbar(e.message ?: "gagal").show()
-                            }
-                        }
-                    }
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
         }
 
         private val exportEncConfig =
@@ -1840,16 +1801,12 @@ class ConfigurationFragment @JvmOverloads constructor(
                 try {
                     val content = (ctxApp as MainActivity).contentResolver
                         .openInputStream(uri)!!.bufferedReader().readText()
-                    val (isRz, needsPin) = RezaBoxCrypto.peek(content)
+                    val isRz = EzboxCrypto.isEzboxFile(content)
                     if (!isRz) {
                         onMainDispatcher { ctxToast(R.string.enc_import_bad) }
                         return@runOnDefaultDispatcher
                     }
-                    if (!needsPin) {
-                        importRzJson(RezaBoxCrypto.decryptNoPin(content))
-                    } else {
-                        onMainDispatcher { askPinAndImport(content) }
-                    }
+                    importRzJson(EzboxCrypto.decrypt(content))
                 } catch (e: Exception) {
                     Logs.w(e)
                     onMainDispatcher { ctxToast(R.string.enc_import_bad) }
@@ -1874,35 +1831,6 @@ private fun ctxToast(resId: Int) {
 
 private fun ctxToast(msg: String) {
     android.widget.Toast.makeText(ctxApp, msg, android.widget.Toast.LENGTH_SHORT).show()
-}
-
-private fun askPinAndImport(content: String) {
-    val ctx = ctxApp
-    val input = android.widget.EditText(ctx).apply {
-        hint = ctx.getString(R.string.enc_pin_import)
-        setSingleLine(true)
-    }
-    val pad = (18 * ctx.resources.displayMetrics.density).toInt()
-    val wrap = android.widget.FrameLayout(ctx).apply {
-        setPadding(pad, pad / 2, pad, 0)
-        addView(input)
-    }
-    MaterialAlertDialogBuilder(ctx)
-        .setTitle(R.string.enc_pin_title)
-        .setView(wrap)
-        .setPositiveButton(android.R.string.ok) { _, _ ->
-            val pin = input.text.toString()
-            runOnDefaultDispatcher {
-                try {
-                    importRzJson(RezaBoxCrypto.decrypt(content, pin))
-                } catch (e: Exception) {
-                    Logs.w(e)
-                    onMainDispatcher { ctxToast(R.string.enc_import_bad) }
-                }
-            }
-        }
-        .setNegativeButton(android.R.string.cancel, null)
-        .show()
 }
 
 private fun importRzJson(jsonStr: String) {
