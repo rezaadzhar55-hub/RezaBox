@@ -54,15 +54,6 @@ class SSHSettingsActivity : ProfileSettingsActivity<SSHBean>() {
         injectorMethod = DataStore.sshInjectorMethod
     }
 
-    private fun androidx.preference.PreferenceFragmentCompat.enable(keys: List<String>) {
-        keys.forEach { k ->
-            findPreference<androidx.preference.Preference>(k)?.let {
-                it.isEnabled = true
-                it.isSelectable = true
-            }
-        }
-    }
-
     override fun PreferenceFragmentCompat.createPreferences(
         savedInstanceState: Bundle?,
         rootKey: String?,
@@ -74,44 +65,29 @@ class SSHSettingsActivity : ProfileSettingsActivity<SSHBean>() {
         val lockProfile = DataStore.profileCacheStore.getBoolean(cacheKey + ":profile", false)
         val lockPayload = DataStore.profileCacheStore.getBoolean(cacheKey + ":payload", false)
         if (lockProfile || lockPayload) {
-            val disable: (String) -> Unit = { key ->
-                findPreference<androidx.preference.Preference>(key)?.let {
-                    it.isEnabled = false
-                    it.isSelectable = false
-                }
+            val hide: (String) -> Unit = { key ->
+                findPreference<androidx.preference.Preference>(key)?.isVisible = false
             }
-            // server & auth selalu terkunci bila lockProfile
-            disable(Key.PROFILE_NAME)
-            disable(Key.SERVER_ADDRESS)
-            disable(Key.SERVER_PORT)
-            disable(Key.SERVER_USERNAME)
-            disable(Key.SERVER_AUTH_TYPE)
-            disable(Key.SERVER_PASSWORD)
-            disable(Key.SERVER_PRIVATE_KEY)
-            disable(Key.SERVER_PASSWORD1)
-            disable(Key.SERVER_CERTIFICATES)
             if (lockProfile) {
-                // kunci profil: SSH + payload semuanya
-                disable(Key.SSH_INJECTOR_BUG_HOST)
-                disable(Key.SSH_INJECTOR_PAYLOAD)
-                disable(Key.SSH_INJECTOR_PROXY)
-                disable(Key.SSH_INJECTOR_METHOD)
-            } else if (lockPayload) {
-                // kunci payload: SSH (server/auth) bebas, payload terkunci
-                // (SSH sudah di-enable ulang di bawah)
-                enable(listOf(
-                    Key.SERVER_ADDRESS, Key.SERVER_PORT, Key.SERVER_USERNAME,
-                    Key.SERVER_AUTH_TYPE, Key.SERVER_PASSWORD,
-                    Key.SERVER_PRIVATE_KEY, Key.SERVER_PASSWORD1, Key.SERVER_CERTIFICATES
-                ))
-                disable(Key.SSH_INJECTOR_BUG_HOST)
-                disable(Key.SSH_INJECTOR_PAYLOAD)
-                disable(Key.SSH_INJECTOR_PROXY)
-                disable(Key.SSH_INJECTOR_METHOD)
-            }
-            // nama profil boleh diedit kalau hanya lockPayload
-            if (!lockProfile) {
-                enable(listOf(Key.PROFILE_NAME))
+                // kunci profil: sembunyikan SEMUA (SSH + payload)
+                hide(Key.SERVER_ADDRESS)
+                hide(Key.SERVER_PORT)
+                hide(Key.SERVER_USERNAME)
+                hide(Key.SERVER_AUTH_TYPE)
+                hide(Key.SERVER_PASSWORD)
+                hide(Key.SERVER_PRIVATE_KEY)
+                hide(Key.SERVER_PASSWORD1)
+                hide(Key.SERVER_CERTIFICATES)
+                hide(Key.SSH_INJECTOR_BUG_HOST)
+                hide(Key.SSH_INJECTOR_PAYLOAD)
+                hide(Key.SSH_INJECTOR_PROXY)
+                hide(Key.SSH_INJECTOR_METHOD)
+            } else {
+                // kunci payload: sembunyikan payload saja, SSH tetap tampil & bisa diedit
+                hide(Key.SSH_INJECTOR_BUG_HOST)
+                hide(Key.SSH_INJECTOR_PAYLOAD)
+                hide(Key.SSH_INJECTOR_PROXY)
+                hide(Key.SSH_INJECTOR_METHOD)
             }
         }
         findPreference<EditTextPreference>(Key.SERVER_PORT)!!.apply {
