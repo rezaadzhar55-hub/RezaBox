@@ -1698,6 +1698,10 @@ class ConfigurationFragment @JvmOverloads constructor(
                                 (parentFragment as ConfigurationFragment).exportConfig, cfg.second
                             )
                         }
+                        R.id.action_enc_ssh -> encExport(entity, EncMode.SSH_ONLY, null)
+                        R.id.action_enc_payload -> encExport(entity, EncMode.PAYLOAD_ONLY, null)
+                        R.id.action_enc_ssh_payload -> encExport(entity, EncMode.SSH_PAYLOAD, null)
+                        R.id.action_enc_plain -> encExport(entity, EncMode.NONE, null)
                     }
                 } catch (e: Exception) {
                     Logs.w(e)
@@ -1730,6 +1734,85 @@ class ConfigurationFragment @JvmOverloads constructor(
                         }
                     }
 
+                }
+            }
+        }
+
+    private enum class EncMode { SSH_ONLY, PAYLOAD_ONLY, SSH_PAYLOAD, NONE }
+
+    private fun encExport(entity: ProxyEntity, mode: EncMode, presetKey: String?) {
+        val bean = entity.sshBean ?: run {
+            (activity as MainActivity).snackbar("Hanya profil SSH yang didukung").show()
+            return
+        }
+        val ctx = requireContext()
+        // tentukan kunci sesuai mode
+        val doExport: (String?) -> Unit = { k ->
+            runOnDefaultDispatcher {
+                try {
+                    val json = org.json.JSONObject().apply {
+                        put("server", bean.server)
+                        put("port", bean.serverPort)
+                        put("user", bean.username)
+                        put("password", bean.password)
+                        put("method", bean.injectorMethod)
+                        put("bughost", bean.injectorBugHost)
+                        put("payload", bean.injectorPayload)
+                        put("proxy", bean.injectorProxy)
+                    }.toString()
+                    val payloadJson = if (mode == EncMode.NONE) json else json
+                    val enc = RezaBoxCrypto.exportProfile(payloadJson, mode.name, k,
+                        if (mode == EncMode.SSH_ONLY || mode == EncMode.SSH_PAYLOAD) bean.password else null,
+                        bean.injectorPayload)
+                    onMainDispatcher {
+                        DataStore.serverConfig = enc
+                        startFilesForResult(exportEncConfig, "${entity.displayName()}.rbx.txt")
+                    }
+                } catch (e: Exception) {
+                    Logs.w(e)
+                    onMainDispatcher {
+                        (activity as MainActivity).snackbar("Export gagal: ${'$'}{e.message}").show()
+                    }
+                }
+            }
+        }
+        when (mode) {
+            EncMode.NONE -> doExport(null)
+            EncMode.SSH_ONLY, EncMode.PAYLOAD_ONLY, EncMode.SSH_PAYLOAD -> {
+                val input = android.widget.EditText(ctx).apply {
+                    hint = ctx.getString(R.string.enc_export_hint)
+                    setSingleLine(true)
+                }
+                val pad = (18 * ctx.resources.displayMetrics.density).toInt()
+                val wrap = android.widget.FrameLayout(ctx).apply {
+                    setPadding(pad, pad / 2, pad, 0)
+                    addView(input)
+                }
+                MaterialAlertDialogBuilder(ctx)
+                    .setTitle(R.string.enc_export_title)
+                    .setView(wrap)
+                    .setPositiveButton(android.R.string.ok) { _, _ -> doExport(input.text.toString()) }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
+        }
+    }
+
+    private val exportEncConfig =
+        registerForActivityResult(ActivityResultContracts.CreateDocument()) { data ->
+            if (data != null) {
+                runOnDefaultDispatcher {
+                    try {
+                        (requireActivity() as MainActivity).contentResolver.openOutputStream(data)!!
+                            .bufferedWriter()
+                            .use { it.write(DataStore.serverConfig) }
+                        onMainDispatcher {
+                            snackbar(getString(R.string.enc_export_ok)).show()
+                        }
+                    } catch (e: Exception) {
+                        Logs.w(e)
+                        onMainDispatcher { snackbar(e.readableMessage).show() }
+                    }
                 }
             }
         }
