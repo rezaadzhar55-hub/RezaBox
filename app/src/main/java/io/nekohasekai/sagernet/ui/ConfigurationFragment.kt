@@ -1901,7 +1901,13 @@ class ConfigurationFragment @JvmOverloads constructor(
                     name = "Reza (Import)"
                     type = GroupType.BASIC
                 })
-                ProfileManager.createProfile(group.id, bean)
+                val pe = ProfileManager.createProfile(group.id, bean)
+                // simpan flag lock di cache per-profil -> field di pengaturan SSH dinonaktifkan
+                val ck = "rzLock:" + pe.id
+                DataStore.profileCacheStore.edit()
+                    .putBoolean(ck + ":payload", lockPayload)
+                    .putBoolean(ck + ":profile", lockProfile)
+                    .apply()
                 // penanda lock lewat nama profil (visual); file .rz tetap tidak terbuka di text editor
                 onMainDispatcher {
                     snackbar(getString(R.string.enc_import_ok) +
