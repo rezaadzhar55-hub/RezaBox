@@ -171,6 +171,15 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             val jsonKeys = arrayOf("\"dns\"", "\"outbounds\"", "\"inbounds\"", "\"route\"", "\"log\"", "\"type\":", "server_address", "server_port")
             if (jsonKeys.any { l.contains(it) }) continue
             if (l.contains("injector connection to")) continue  // detail teknis ssh settings
+            // sembunyikan SEMUA pengaturan teknis SSH/VMess saat menghubungkan
+            val sshNoise = arrayOf(
+                "Sidik jari Hostkey", "Key exchange algorithm", "Using algorithm",
+                "Pengguna:", "Password auth available", "Otentifikasi dengan Sandi",
+                "SSH handshake ok", "server host key", "host key alg", "kex", "cipher",
+                "ssh://", "Kompresi ssh", "auth attempt", "Auth success", "handshake",
+                "vmess", "vless", "encryption", "alterId", "security", "network: ws"
+            )
+            if (sshNoise.any { l.contains(it, ignoreCase = true) }) continue
             // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
             var out = l
             val t = Regex("""^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) """).find(l)
