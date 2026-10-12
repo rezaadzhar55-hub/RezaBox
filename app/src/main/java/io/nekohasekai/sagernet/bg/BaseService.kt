@@ -380,6 +380,10 @@ class BaseService {
             runOnMainDispatcher {
                 try {
                     Logs.i("[MULAI] layanan diminta")
+                    // bersihkan logchat untuk koneksi baru (gaya HI)
+                    runCatching {
+                        java.io.File(SagerNet.application.cacheDir, "neko.log").writeText("")
+                    }
                     Logs.i("Memulai layanan tunnel: " + profile.displayName())
                     data.notification = createNotification(ServiceNotification.genTitle(profile))
 

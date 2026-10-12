@@ -164,6 +164,17 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("Rejecting re-init") || l.contains("NoClassDefFoundError")) continue
             if (l.contains("chatty")) continue
             if (l.contains("Accessing hidden")) continue
+            // sembunyikan baris tag internal [Info]/[Debug]/[Warning] [BaseService$Interface$...] dll
+            if (l.contains("[BaseService") || l.contains("Interface$") ||
+                l.contains("[Info] [") || l.contains("[Debug] [") ||
+                l.contains("[Warning] [") || l.contains("[Error] [")) {
+                // baris hanya berupa tag tanpa konten berguna -> buang; kontennya tetap lewat jika ada teks lain
+                val stripped = l.replace(Regex("\\[(Info|Debug|Warning|Error)\\] \\[[^\\]]*\\]?"), "").trim()
+                if (stripped.isEmpty() || stripped == "]") continue
+                // jika sisa kontennya adalah pesan HI yang kita tampilkan, tampilkan versi bersih
+                sb.appendLine(stripped)
+                continue
+            }
             // sembunyikan inbound/outbound per-koneksi & config JSON (gaya HI: cukup payload & status)
             if (l.contains("inbound connection") || l.contains("outbound connection")) continue
             if (l.contains("inbound packet") || l.contains("outbound packet")) continue
