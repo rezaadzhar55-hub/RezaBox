@@ -1823,7 +1823,7 @@ class ConfigurationFragment @JvmOverloads constructor(
         }
 
         // ===== Import .rz =====
-        private fun askPinAndImport(content: String) {
+    private fun askPinAndImport(content: String) {
         val ctx = requireContext()
         val input = android.widget.EditText(ctx).apply {
             hint = ctx.getString(R.string.enc_pin_import)
@@ -1852,7 +1852,7 @@ class ConfigurationFragment @JvmOverloads constructor(
             .show()
     }
 
-        private fun importRzJson(jsonStr: String) {
+    private fun importRzJson(jsonStr: String) {
         runOnDefaultDispatcher {
             try {
                 val json = org.json.JSONObject(jsonStr)
