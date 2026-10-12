@@ -134,7 +134,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
         when {
             // log gaya HTTP Injector
             line.contains("[PING]") -> {
-                val ms = Regex("Ping: (\\d+) ms").find(line)?.group(1)?.toIntOrNull()
+                val ms = Regex("Ping: ([0-9]+) ms").find(line)?.let { it.groupValues.getOrNull(1) }?.toIntOrNull()
                 when {
                     ms == null && line.contains("gagal") -> color = ForegroundColorSpan(Color.RED)
                     ms == null -> color = ForegroundColorSpan((0xFF1E90FF).toInt()) // biru (info ping)

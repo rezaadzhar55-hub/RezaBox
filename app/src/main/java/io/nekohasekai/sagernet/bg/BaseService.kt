@@ -385,7 +385,7 @@ class BaseService {
                         java.io.File(SagerNet.application.cacheDir, "neko.log").writeText("")
                     }
                     Logs.i("Started Tunnel Tread")
-                    Logs.i("Tunnel Type : " + profile.typeName())
+                    Logs.i("Tunnel Type : " + profile.displayType())
                     Logs.i("Connecting")
                     data.notification = createNotification(ServiceNotification.genTitle(profile))
 
