@@ -55,7 +55,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
 
     // auto-refresh: log baru muncul otomatis tanpa tekan refresh
     private var autoRefreshJob: Job? = null
-    private var lastLen = -1
+    private var lastLen = -1L
 
     private fun startAutoRefresh() {
         autoRefreshJob?.cancel()
@@ -127,11 +127,11 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("Accessing hidden")) continue
             // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
             var out = l
-            val t = Regex("^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) ").find(l)
+            val t = Regex("""^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) """).find(l)
             if (t != null) out = l.substring(t.range.last + 1)
             // ringkas INFO[0000] -> hilangkan padding
-            out = out.replace(Regex("INFO\[\d+\] "), "")
-            out = out.replace(Regex("ERROR\[\d+\] "), "ERROR: ")
+            out = out.replace(Regex("""INFO\[\d+\] """), "")
+            out = out.replace(Regex("""ERROR\[\d+\] """), "ERROR: ")
             out = out.replace(Regex("WARN\[\d+\] "), "WARN: ")
             sb.appendLine(out)
         }
