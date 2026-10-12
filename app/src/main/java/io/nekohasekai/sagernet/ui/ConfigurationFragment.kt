@@ -1823,31 +1823,6 @@ class ConfigurationFragment @JvmOverloads constructor(
         }
 
         // ===== Import .rz =====
-        private val importEncLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            if (uri != null) {
-                runOnDefaultDispatcher {
-                    try {
-                        val content = (requireActivity() as MainActivity).contentResolver
-                            .openInputStream(uri)!!.bufferedReader().readText()
-                        val (isRz, needsPin) = RezaBoxCrypto.peek(content)
-                        if (!isRz) {
-                            onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
-                            return@runOnDefaultDispatcher
-                        }
-                        if (!needsPin) {
-                            onMainDispatcher { importRzJson(RezaBoxCrypto.decryptNoPin(content)) }
-                        } else {
-                            onMainDispatcher { askPinAndImport(content) }
-                        }
-                    } catch (e: Exception) {
-                        Logs.w(e)
-                        onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
-                    }
-                }
-            }
-        }
-
         private fun askPinAndImport(content: String) {
         val ctx = requireContext()
         val input = android.widget.EditText(ctx).apply {
@@ -1919,6 +1894,31 @@ class ConfigurationFragment @JvmOverloads constructor(
             }
         }
     }
+        }
+
+    private val importEncLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                runOnDefaultDispatcher {
+                    try {
+                        val content = (requireActivity() as MainActivity).contentResolver
+                            .openInputStream(uri)!!.bufferedReader().readText()
+                        val (isRz, needsPin) = RezaBoxCrypto.peek(content)
+                        if (!isRz) {
+                            onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
+                            return@runOnDefaultDispatcher
+                        }
+                        if (!needsPin) {
+                            onMainDispatcher { importRzJson(RezaBoxCrypto.decryptNoPin(content)) }
+                        } else {
+                            onMainDispatcher { askPinAndImport(content) }
+                        }
+                    } catch (e: Exception) {
+                        Logs.w(e)
+                        onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
+                    }
+                }
+            }
         }
 
     private val exportConfig =

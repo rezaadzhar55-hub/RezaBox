@@ -78,13 +78,13 @@ class SSHSettingsActivity : ProfileSettingsActivity<SSHBean>() {
                 hide(Key.SERVER_PRIVATE_KEY)
                 hide(Key.SERVER_PASSWORD1)
                 hide(Key.SERVER_CERTIFICATES)
-                hide(Key.SSH_INJECTOR_BUG_HOST)
+                hide(Key.SSH_INJECTOR_BUGHOST)
                 hide(Key.SSH_INJECTOR_PAYLOAD)
                 hide(Key.SSH_INJECTOR_PROXY)
                 hide(Key.SSH_INJECTOR_METHOD)
             } else {
                 // kunci payload: sembunyikan payload saja, SSH tetap tampil & bisa diedit
-                hide(Key.SSH_INJECTOR_BUG_HOST)
+                hide(Key.SSH_INJECTOR_BUGHOST)
                 hide(Key.SSH_INJECTOR_PAYLOAD)
                 hide(Key.SSH_INJECTOR_PROXY)
                 hide(Key.SSH_INJECTOR_METHOD)
