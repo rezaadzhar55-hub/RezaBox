@@ -379,12 +379,14 @@ class BaseService {
             data.changeState(State.Connecting)
             runOnMainDispatcher {
                 try {
-                    Logs.i("[MULAI] layanan diminta")
+                    Logs.i("Starting SSH Service")
                     // bersihkan logchat untuk koneksi baru (gaya HI)
                     runCatching {
                         java.io.File(SagerNet.application.cacheDir, "neko.log").writeText("")
                     }
-                    Logs.i("Memulai layanan tunnel: " + profile.displayName())
+                    Logs.i("Started Tunnel Tread")
+                    Logs.i("Tunnel Type : " + profile.typeName())
+                    Logs.i("Connecting")
                     data.notification = createNotification(ServiceNotification.genTitle(profile))
 
                     Executable.killAll()    // clean up old processes
@@ -398,7 +400,7 @@ class BaseService {
                     }
 
                     startProcesses()
-                    Logs.i("[VPN] Terhubung")
+                    Logs.i("Connected")
                     data.changeState(State.Connected)
 
                     lateInit()

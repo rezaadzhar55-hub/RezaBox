@@ -135,7 +135,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             // log gaya HTTP Injector
             line.contains("[PING]") -> color = ForegroundColorSpan((0xFF1E90FF).toInt()) // biru
             line.contains("101 Switching Protocols") || line.contains("200 Connection established") ||
-                line.contains("Terhubung") || line.contains("handshake ok") ||
+                line.contains("Connected") || line.contains("Accepted password") ||
                 line.contains("Accepted password") -> color = ForegroundColorSpan((0xFF00B36B).toInt()) // hijau
             line.contains("Sidik jari") || line.contains("Local IP") ->
                 color = ForegroundColorSpan((0xFF00B36B).toInt())
@@ -190,14 +190,11 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("injector connection to")) continue  // detail teknis ssh settings
             // sembunyikan SEMUA pengaturan teknis SSH/VMess saat menghubungkan
             val sshNoise = arrayOf(
-                "Sidik jari Hostkey", "Key exchange algorithm", "Using algorithm",
                 "Pengguna:", "Password auth available", "Otentifikasi dengan Sandi",
-                "server host key", "host key alg", "kex ", "cipher",
-                "ssh://", "Kompresi ssh", "auth attempt",
-                "vmess", "vless", "encryption", "alterId", "security", "network: ws"
+                "server host key", "host key alg", "ssh://", "Kompresi ssh", "auth attempt",
+                "vmess", "vless", "alterId", "network: ws"
             )
-            if (sshNoise.any { l.contains(it, ignoreCase = true) } &&
-                !l.contains("handshake ok")) continue
+            if (sshNoise.any { l.contains(it, ignoreCase = true) }) continue
             // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
             var out = l
             val t = Regex("""^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) """).find(l)
