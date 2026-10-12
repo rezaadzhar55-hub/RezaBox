@@ -168,10 +168,9 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("inbound connection") || l.contains("outbound connection")) continue
             if (l.contains("inbound packet") || l.contains("outbound packet")) continue
             if (l.contains("inbound/tun") || l.contains("inbound/mixed")) continue
-            if (l.contains(""dns"") || l.contains(""outbounds"") || l.contains(""inbounds"") ||
-                l.contains(""route"") || l.contains(""log"")) continue
+            val jsonKeys = arrayOf("\"dns\"", "\"outbounds\"", "\"inbounds\"", "\"route\"", "\"log\"", "\"type\":", "server_address", "server_port")
+            if (jsonKeys.any { l.contains(it) }) continue
             if (l.contains("injector connection to")) continue  // detail teknis ssh settings
-            if (l.contains("server_address") || l.contains("server_port") || l.contains(""type":")) continue
             // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
             var out = l
             val t = Regex("""^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) """).find(l)
