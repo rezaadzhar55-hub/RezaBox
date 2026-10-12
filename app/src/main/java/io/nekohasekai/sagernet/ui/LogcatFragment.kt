@@ -1,5 +1,7 @@
 package io.nekohasekai.sagernet.ui
 
+import io.nekohasekai.sagernet.database.DataStore
+
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Build
