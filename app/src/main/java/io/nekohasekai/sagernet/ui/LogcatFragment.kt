@@ -130,37 +130,33 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     }
 
     private fun getColorForLine(line: String): ForegroundColorSpan {
-        var color = ForegroundColorSpan(Color.GRAY)
-        when {
-            // log gaya HTTP Injector
+        val hi = when {
+            line.contains("Starting SSH Service") -> (0xFFFFFF00).toInt()      // kuning
+            line.contains("Started Tunnel Tread") -> (0xFFFFFF00).toInt()
+            line.contains("Tunnel Type") -> (0xFF00C853).toInt()               // hijau muda
+            line.contains("Connecting") -> (0xFFFF9800).toInt()                // oranye
+            line.contains("SSH banner") -> (0xFF4FC3F7).toInt()                // biru muda
+            line.contains("Fingerprint") -> (0xFFB39DDB).toInt()               // ungu
+            line.contains("Key exchange") || line.contains("Using algorithm") -> (0xFF90A4AE).toInt() // abu terang
+            line.contains("Authenticating with password") -> (0xFFFFD54F).toInt() // kuning muda
+            line.contains("Connected") || line.contains("Accepted password") -> (0xFF00E676).toInt() // HIJAU terang
             line.contains("[PING]") -> {
                 val ms = Regex("Ping: ([0-9]+) ms").find(line)?.let { it.groupValues.getOrNull(1) }?.toIntOrNull()
                 when {
-                    ms == null && line.contains("gagal") -> color = ForegroundColorSpan(Color.RED)
-                    ms == null -> color = ForegroundColorSpan((0xFF1E90FF).toInt()) // biru (info ping)
-                    ms < 200 -> color = ForegroundColorSpan((0xFF00B36B).toInt()) // hijau
-                    ms < 500 -> color = ForegroundColorSpan((0xFFFFC107).toInt()) // kuning
-                    else -> color = ForegroundColorSpan(Color.RED)
+                    ms == null && line.contains("gagal") -> (0xFFFF5252).toInt()
+                    ms == null -> (0xFF1E90FF).toInt()
+                    ms < 200 -> (0xFF00E676).toInt()
+                    ms < 500 -> (0xFFFFEB3B).toInt()
+                    else -> (0xFFFF5252).toInt()
                 }
             }
-            line.contains("101 Switching Protocols") || line.contains("200 Connection established") ||
-                line.contains("Connected") || line.contains("Accepted password") ||
-                line.contains("Accepted password") -> color = ForegroundColorSpan((0xFF00B36B).toInt()) // hijau
-            line.contains("Sidik jari") || line.contains("Local IP") ->
-                color = ForegroundColorSpan((0xFF00B36B).toInt())
-            line.contains("INFO[") || line.contains(" [Info]") -> {
-                color = ForegroundColorSpan((0xFF86C166).toInt())
-            }
-
-            line.contains("ERROR[") || line.contains(" [Error]") -> {
-                color = ForegroundColorSpan(Color.RED)
-            }
-
-            line.contains("WARN[") || line.contains(" [Warning]") -> {
-                color = ForegroundColorSpan(Color.RED)
-            }
+            line.contains("101 Switching Protocols") || line.contains("200 Connection established") -> (0xFF00E676).toInt()
+            line.contains("Local IP") || line.contains("Format Payload") || line.contains("Mengirim payload") -> (0xFFBDBDBD).toInt()
+            line.contains("ERROR") || line.contains("Koneksi Hilang") || line.contains("gagal") -> (0xFFFF5252).toInt()
+            line.contains("WARN") -> (0xFFFFAB40).toInt()
+            else -> null
         }
-        return color
+        return ForegroundColorSpan(hi ?: Color.GRAY)
     }
 
     private fun reloadSession() {
@@ -180,6 +176,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("Ping: aktif (interval")) continue  // sembunyikan info interval, hasil ping tetap tampil
             // header tag outbound/inbound dari sing-box (outbound/injector[injector]: dst)
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
+            if (l.startsWith("sing-box started")) continue
             if (l.contains("[BaseService") || l.contains("Interface$") ||
                 l.contains("[Info] [") || l.contains("[Debug] [") ||
                 l.contains("[Warning] [") || l.contains("[Error] [")) {
@@ -205,7 +202,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             if (sshNoise.any { l.contains(it, ignoreCase = true) }) continue
             // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
-            var out = l
+            var out = l.replace(Regex("^outbound/[a-z]+(\\[[a-z]+\\])?:\\s*"), "")
+                      .replace(Regex("^inbound/[a-z]+(\\[[a-z]+\\])?:\\s*"), "")
             val t = Regex("""^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) """).find(l)
             if (t != null) out = l.substring(t.range.last + 1)
             // ringkas INFO[0000] -> hilangkan padding
