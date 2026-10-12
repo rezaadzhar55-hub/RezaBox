@@ -129,6 +129,18 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
         startAutoRefresh()
     }
 
+
+    private fun isCurrentProfileLocked(): Boolean {
+        return try {
+            val id = DataStore.currentProfile
+            if (id == 0L) return false
+            DataStore.profileCacheStore.getBoolean("rzLock:$id:payload", false) ||
+                DataStore.profileCacheStore.getBoolean("rzLock:$id:profile", false)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     private fun getColorForLine(line: String): ForegroundColorSpan {
         val hi = when {
             line.contains("Starting SSH Service") -> (0xFFFFFF00).toInt()      // kuning
@@ -194,6 +206,11 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             val jsonKeys = arrayOf("\"dns\"", "\"outbounds\"", "\"inbounds\"", "\"route\"", "\"log\"", "\"type\":", "server_address", "server_port")
             if (jsonKeys.any { l.contains(it) }) continue
             if (l.contains("injector connection to")) continue  // detail teknis ssh settings
+            // profil terkunci (export .rz): payload & bug host JANGAN ditampilkan di logchat
+            if (isCurrentProfileLocked() &&
+                (l.contains("Format Payload") || l.contains("Mengirim payload") ||
+                    l.contains("payload") || l.contains("bug host", ignoreCase = true) ||
+                    l.contains("Bug Host"))) continue
             // sembunyikan SEMUA pengaturan teknis SSH/VMess saat menghubungkan
             val sshNoise = arrayOf(
                 "Pengguna:", "Password auth available", "Otentifikasi dengan Sandi",
