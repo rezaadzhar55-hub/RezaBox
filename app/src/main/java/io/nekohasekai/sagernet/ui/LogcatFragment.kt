@@ -55,6 +55,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     }
 
     // info device/IP/jaringan langsung muncul saat Log dibuka (tanpa perlu start VPN)
+    private var deviceHeader: String = ""
+
     private fun logDeviceInfoOnce() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             runCatching {
@@ -86,7 +88,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                     "Local IP: ${localIp ?: "-"}",
                 )
                 withContext(Dispatchers.Main) {
-                    binding.textview.text = lines.joinToString("\n") + "\n\n" + binding.textview.text
+                    deviceHeader = lines.joinToString("\n")
+                    binding.textview.text = deviceHeader + "\n\n" + binding.textview.text
                 }
             }
         }
@@ -213,7 +216,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             offset += line.length + 1
         }
-        binding.textview.text = span
+        binding.textview.text = if (deviceHeader.isNotBlank())
+            deviceHeader + "\n\n" + span else span
         binding.textview.clearFocus()
         // 等 textview 完成最终 layout 再滚动到底部
         binding.textview.doOnLayout {
