@@ -373,6 +373,7 @@ class ConfigurationFragment @JvmOverloads constructor(
             }
 
             R.id.action_import_file -> {
+                ctxApp = requireContext()
                 importEncLauncher.launch("*/*")
                 // launcher .rz; file biasa tetap bisa lewat menu import clipboard/plan b:
                 // (jika bukan file .rz, user diminta kunci -> gagal -> pakai import lama)
@@ -1822,105 +1823,6 @@ class ConfigurationFragment @JvmOverloads constructor(
             }
         }
 
-        // ===== Import .rz =====
-    private fun askPinAndImport(content: String) {
-        val ctx = requireContext()
-        val input = android.widget.EditText(ctx).apply {
-            hint = ctx.getString(R.string.enc_pin_import)
-            setSingleLine(true)
-        }
-        val pad = (18 * ctx.resources.displayMetrics.density).toInt()
-        val wrap = android.widget.FrameLayout(ctx).apply {
-            setPadding(pad, pad / 2, pad, 0)
-            addView(input)
-        }
-        MaterialAlertDialogBuilder(ctx)
-            .setTitle(R.string.enc_pin_title)
-            .setView(wrap)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                val pin = input.text.toString()
-                runOnDefaultDispatcher {
-                    try {
-                        importRzJson(RezaBoxCrypto.decrypt(content, pin))
-                    } catch (e: Exception) {
-                        Logs.w(e)
-                        onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
-                    }
-                }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-
-    private fun importRzJson(jsonStr: String) {
-        runOnDefaultDispatcher {
-            try {
-                val json = org.json.JSONObject(jsonStr)
-                val bean = io.nekohasekai.sagernet.fmt.ssh.SSHBean().apply {
-                    serverAddress = json.optString("server")
-                    serverPort = json.optInt("port", 80)
-                    username = json.optString("user")
-                    authType = io.nekohasekai.sagernet.fmt.ssh.SSHBean.AUTH_TYPE_PASSWORD
-                    password = json.optString("password")
-                    injectorBugHost = json.optString("bughost")
-                    injectorPayload = json.optString("payload")
-                    injectorProxy = json.optString("proxy")
-                    injectorMethod = json.optInt("method", 0)
-                    name = json.optString("name", serverAddress)
-                }
-                val lockPayload = json.optBoolean("lockPayload", false)
-                val lockProfile = json.optBoolean("lockProfile", false)
-                val group = SagerDatabase.groupDao.allGroups().firstOrNull {
-                    it.name == "Reza (Import)"
-                } ?: GroupManager.createGroup(ProxyGroup().apply {
-                    name = "Reza (Import)"
-                    type = GroupType.BASIC
-                })
-                val pe = ProfileManager.createProfile(group.id, bean)
-                // simpan flag lock di cache per-profil -> field di pengaturan SSH dinonaktifkan
-                val ck = "rzLock:" + pe.id
-                DataStore.profileCacheStore.putBoolean(ck + ":payload", lockPayload)
-                DataStore.profileCacheStore.putBoolean(ck + ":profile", lockProfile)
-                // penanda lock lewat nama profil (visual); file .rz tetap tidak terbuka di text editor
-                onMainDispatcher {
-                    snackbar(getString(R.string.enc_import_ok) +
-                        (if (lockProfile) " • " + getString(R.string.enc_locked_profile)
-                         else if (lockPayload) " • " + getString(R.string.enc_locked_payload) else "")
-                    ).show()
-                }
-            } catch (e: Exception) {
-                Logs.w(e)
-                onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
-            }
-        }
-    }
-        }
-
-    private val importEncLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            if (uri != null) {
-                runOnDefaultDispatcher {
-                    try {
-                        val content = (requireActivity() as MainActivity).contentResolver
-                            .openInputStream(uri)!!.bufferedReader().readText()
-                        val (isRz, needsPin) = RezaBoxCrypto.peek(content)
-                        if (!isRz) {
-                            onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
-                            return@runOnDefaultDispatcher
-                        }
-                        if (!needsPin) {
-                            onMainDispatcher { importRzJson(RezaBoxCrypto.decryptNoPin(content)) }
-                        } else {
-                            onMainDispatcher { askPinAndImport(content) }
-                        }
-                    } catch (e: Exception) {
-                        Logs.w(e)
-                        onMainDispatcher { snackbar(getString(R.string.enc_import_bad)).show() }
-                    }
-                }
-            }
-        }
-
     private val exportConfig =
         registerForActivityResult(ActivityResultContracts.CreateDocument()) { data ->
             if (data != null) {
@@ -1951,3 +1853,112 @@ class ConfigurationFragment @JvmOverloads constructor(
     }
 
 }
+private lateinit var ctxApp: android.content.Context
+
+private fun ctxToast(resId: Int) {
+    android.widget.Toast.makeText(ctxApp, resId, android.widget.Toast.LENGTH_SHORT).show()
+}
+
+private fun ctxToast(msg: String) {
+    android.widget.Toast.makeText(ctxApp, msg, android.widget.Toast.LENGTH_SHORT).show()
+}
+
+// ===== Import .rz helpers (file-level) =====
+private fun askPinAndImport(content: String) {
+        val ctx = requireContext()
+        val input = android.widget.EditText(ctx).apply {
+            hint = ctx.getString(R.string.enc_pin_import)
+            setSingleLine(true)
+        }
+        val pad = (18 * ctx.resources.displayMetrics.density).toInt()
+        val wrap = android.widget.FrameLayout(ctx).apply {
+            setPadding(pad, pad / 2, pad, 0)
+            addView(input)
+        }
+        MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.enc_pin_title)
+            .setView(wrap)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val pin = input.text.toString()
+                runOnDefaultDispatcher {
+                    try {
+                        importRzJson(RezaBoxCrypto.decrypt(content, pin))
+                    } catch (e: Exception) {
+                        Logs.w(e)
+                        onMainDispatcher { ctxToast(getString(R.string.enc_import_bad)).show() }
+                    }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+private fun importRzJson(jsonStr: String) {
+        runOnDefaultDispatcher {
+            try {
+                val json = org.json.JSONObject(jsonStr)
+                val bean = io.nekohasekai.sagernet.fmt.ssh.SSHBean().apply {
+                    serverAddress = json.optString("server")
+                    serverPort = json.optInt("port", 80)
+                    username = json.optString("user")
+                    authType = io.nekohasekai.sagernet.fmt.ssh.SSHBean.AUTH_TYPE_PASSWORD
+                    password = json.optString("password")
+                    injectorBugHost = json.optString("bughost")
+                    injectorPayload = json.optString("payload")
+                    injectorProxy = json.optString("proxy")
+                    injectorMethod = json.optInt("method", 0)
+                    name = json.optString("name", serverAddress)
+                }
+                val lockPayload = json.optBoolean("lockPayload", false)
+                val lockProfile = json.optBoolean("lockProfile", false)
+                val group = SagerDatabase.groupDao.allGroups().firstOrNull {
+                    it.name == "Reza (Import)"
+                } ?: GroupManager.createGroup(ProxyGroup().apply {
+                    name = "Reza (Import)"
+                    type = GroupType.BASIC
+                })
+                val pe = ProfileManager.createProfile(group.id, bean)
+                // simpan flag lock di cache per-profil -> field di pengaturan SSH dinonaktifkan
+                val ck = "rzLock:" + pe.id
+                DataStore.profileCacheStore.putBoolean(ck + ":payload", lockPayload)
+                DataStore.profileCacheStore.putBoolean(ck + ":profile", lockProfile)
+                // penanda lock lewat nama profil (visual); file .rz tetap tidak terbuka di text editor
+                onMainDispatcher {
+                    ctxToast(getString(R.string.enc_import_ok) +
+                        (if (lockProfile) " • " + getString(R.string.enc_locked_profile)
+                         else if (lockPayload) " • " + getString(R.string.enc_locked_payload) else "")
+                    ).show()
+                }
+            } catch (e: Exception) {
+                Logs.w(e)
+                onMainDispatcher { ctxToast(getString(R.string.enc_import_bad)).show() }
+            }
+        }
+    }
+        }
+
+    private val importEncLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                runOnDefaultDispatcher {
+                    try {
+                        val content = (ctxApp).contentResolver
+                            .openInputStream(uri)!!.bufferedReader().readText()
+                        val (isRz, needsPin) = RezaBoxCrypto.peek(content)
+                        if (!isRz) {
+                            onMainDispatcher { ctxToast(getString(R.string.enc_import_bad)).show() }
+                            return@runOnDefaultDispatcher
+                        }
+                        if (!needsPin) {
+                            onMainDispatcher { importRzJson(RezaBoxCrypto.decryptNoPin(content)) }
+                        } else {
+                            onMainDispatcher { askPinAndImport(content) }
+                        }
+                    } catch (e: Exception) {
+                        Logs.w(e)
+                        onMainDispatcher { ctxToast(getString(R.string.enc_import_bad)).show() }
+                    }
+                }
+            }
+        }
+
