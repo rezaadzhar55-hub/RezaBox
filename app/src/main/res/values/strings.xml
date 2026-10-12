@@ -580,9 +580,13 @@
     <string name="minimize">Minimize</string>
     <string name="app_list_permission_denied">Unable to read installed apps.\nThis is usually because the system has restricted app read permissions.\nPlease grant permissions in the system settings.</string>
     <string name="open_app_settings">Open System Settings</string>
-    <string name="enc_export_title">Kunci Enkripsi</string>
-    <string name="enc_export_hint">Masukkan kunci (password SSH / kunci payload)</string>
-    <string name="enc_import_title">File Terenkripsi RezaBox</string>
-    <string name="enc_export_ok">Export terenkripsi berhasil!</string>
-    <string name="enc_export_err">Gagal enkripsi: %1$s</string>
+    <string name="enc_pin_title">Kunci Profil (.rz)</string>
+    <string name="enc_pin_hint">Buat kunci (PIN) untuk file ini</string>
+    <string name="enc_pin_import">Masukkan kunci file .rz</string>
+    <string name="enc_export_ok">Profil terenkripsi (.rz) tersimpan!</string>
+    <string name="enc_export_err">Gagal: %1$s</string>
+    <string name="enc_import_ok">Profil berhasil diimpor!</string>
+    <string name="enc_import_bad">Kunci salah atau file rusak</string>
+    <string name="enc_locked_payload">Payload terkunci — hanya SSH yang bisa diedit</string>
+    <string name="enc_locked_profile">Profil terkunci — tidak bisa diedit</string>
 </resources>

@@ -168,7 +168,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("chatty")) continue
             if (l.contains("Accessing hidden")) continue
             // sembunyikan baris tag internal [Info]/[Debug]/[Warning] [BaseService$Interface$...] dll
-            if (l.contains("Ping: aktif (interval") || l.contains("[PingWorker")) continue
+            if (l.contains("Ping: aktif (interval")) continue  // sembunyikan info interval, hasil ping tetap tampil
             // header tag outbound/inbound dari sing-box (outbound/injector[injector]: dst)
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
             if (l.contains("[BaseService") || l.contains("Interface$") ||
@@ -238,8 +238,10 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                         }
                         return@runOnDefaultDispatcher
                     }
+                    lastLen = -1L
                     onMainDispatcher {
-                        binding.textview.text = ""
+                        binding.textview.text = deviceHeader
+                        logDeviceInfoOnce()
                     }
                 }
 

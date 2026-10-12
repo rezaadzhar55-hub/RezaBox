@@ -41,17 +41,14 @@
         android:title="Export Terenkripsi">
         <menu>
             <item
-                android:id="@+id/action_enc_ssh"
-                android:title="Kunci SSH Akun" />
-            <item
                 android:id="@+id/action_enc_payload"
-                android:title="Kunci Payload" />
+                android:title="Export — Kunci Payload" />
             <item
                 android:id="@+id/action_enc_ssh_payload"
-                android:title="Kunci SSH + Payload" />
+                android:title="Export — Kunci Profil" />
             <item
                 android:id="@+id/action_enc_plain"
-                android:title="Tanpa Kunci SSH + Payload" />
+                android:title="Export — Simpan (bebas edit)" />
         </menu>
     </item>
 </menu>
