@@ -192,11 +192,12 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             val sshNoise = arrayOf(
                 "Sidik jari Hostkey", "Key exchange algorithm", "Using algorithm",
                 "Pengguna:", "Password auth available", "Otentifikasi dengan Sandi",
-                "SSH handshake ok", "server host key", "host key alg", "kex", "cipher",
-                "ssh://", "Kompresi ssh", "auth attempt", "Auth success", "handshake",
+                "server host key", "host key alg", "kex ", "cipher",
+                "ssh://", "Kompresi ssh", "auth attempt",
                 "vmess", "vless", "encryption", "alterId", "security", "network: ws"
             )
-            if (sshNoise.any { l.contains(it, ignoreCase = true) }) continue
+            if (sshNoise.any { l.contains(it, ignoreCase = true) } &&
+                !l.contains("handshake ok")) continue
             // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
             var out = l
             val t = Regex("""^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) """).find(l)
