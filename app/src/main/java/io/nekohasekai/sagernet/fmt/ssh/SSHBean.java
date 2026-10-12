@@ -94,8 +94,7 @@ public class SSHBean extends AbstractBean {
             injectorProxy = input.readString();
             injectorMethod = input.readInt();
         } catch (KryoException e) {
-            // data lama: profil dibuat versi sebelum ada field baru — pakai apa yang terbaca
-            android.util.Log.w("KryoConverters", "SSHBean partial deserialize: " + e.getMessage());
+            // data lama: profil dibuat versi sebelum ada field baru — pakai apa yang terbaca (diam)
         }
     }
 

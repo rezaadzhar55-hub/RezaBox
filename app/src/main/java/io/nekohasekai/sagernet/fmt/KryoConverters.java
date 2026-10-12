@@ -53,7 +53,7 @@ public class KryoConverters {
         try {
             bean.deserializeFromBuffer(buffer);
         } catch (KryoException e) {
-            Logs.INSTANCE.w(e);
+            // toleransi data lama: tanpa log (user request logchat bersih)
         }
         bean.initializeDefaultValues();
         return bean;
