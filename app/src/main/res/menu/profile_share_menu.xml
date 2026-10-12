@@ -10,25 +10,7 @@
             <item
                 android:id="@+id/action_universal_qr"
                 android:title="SN Link" />
-            <item
-        android:id="@+id/action_group_encrypted"
-        android:title="Export Terenkripsi">
-        <menu>
-            <item
-                android:id="@+id/action_enc_ssh"
-                android:title="Kunci SSH Akun" />
-            <item
-                android:id="@+id/action_enc_payload"
-                android:title="Kunci Payload" />
-            <item
-                android:id="@+id/action_enc_ssh_payload"
-                android:title="Kunci SSH + Payload" />
-            <item
-                android:id="@+id/action_enc_plain"
-                android:title="Tanpa Kunci SSH + Payload" />
         </menu>
-    </item>
-</menu>
     </item>
     <item
         android:id="@+id/action_group_clipboard"
@@ -40,29 +22,10 @@
             <item
                 android:id="@+id/action_universal_clipboard"
                 android:title="SN Link" />
-            <item
-        android:id="@+id/action_group_encrypted"
-        android:title="Export Terenkripsi">
-        <menu>
-            <item
-                android:id="@+id/action_enc_ssh"
-                android:title="Kunci SSH Akun" />
-            <item
-                android:id="@+id/action_enc_payload"
-                android:title="Kunci Payload" />
-            <item
-                android:id="@+id/action_enc_ssh_payload"
-                android:title="Kunci SSH + Payload" />
-            <item
-                android:id="@+id/action_enc_plain"
-                android:title="Tanpa Kunci SSH + Payload" />
         </menu>
-    </item>
-</menu>
     </item>
     <item
         android:id="@+id/action_group_configuration"
-
         android:title="@string/menu_configuration">
         <menu>
             <item
@@ -71,25 +34,7 @@
             <item
                 android:id="@+id/action_config_export_file"
                 android:title="@string/action_export_file" />
-            <item
-        android:id="@+id/action_group_encrypted"
-        android:title="Export Terenkripsi">
-        <menu>
-            <item
-                android:id="@+id/action_enc_ssh"
-                android:title="Kunci SSH Akun" />
-            <item
-                android:id="@+id/action_enc_payload"
-                android:title="Kunci Payload" />
-            <item
-                android:id="@+id/action_enc_ssh_payload"
-                android:title="Kunci SSH + Payload" />
-            <item
-                android:id="@+id/action_enc_plain"
-                android:title="Tanpa Kunci SSH + Payload" />
         </menu>
-    </item>
-</menu>
     </item>
     <item
         android:id="@+id/action_group_encrypted"
