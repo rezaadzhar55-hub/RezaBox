@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -252,6 +253,14 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 color, offset, offset + line.length, SPAN_EXCLUSIVE_EXCLUSIVE
             )
             offset += line.length + 1
+        }
+        // baris "Connected" dibuat bold
+        var off3 = 0
+        for (line in span.lines()) {
+            if (line.contains("Connected")) {
+                span.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), off3, off3 + line.length, SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            off3 += line.length + 1
         }
 
         // warnai HANYA latency: "[PING] 87 ms" -> "87 ms" berwarna, sisanya netral
