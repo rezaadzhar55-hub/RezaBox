@@ -28,22 +28,6 @@ object PingWorker {
         val target = DataStore.pingTarget
         stop()
         job = scope.launch {
-            // log tipe HP gaya HI (info device)
-            Logs.i(
-                "[PING] Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} " +
-                    "(Android ${android.os.Build.VERSION.RELEASE}, ${android.os.Build.SUPPORTED_ABIS[0]})"
-            )
-            // log IP lokal gaya HI
-            try {
-                val localIp = java.net.NetworkInterface.getNetworkInterfaces().asSequence()
-                    .filter { it.isUp && !it.isLoopback }
-                    .flatMap { it.inetAddresses.asSequence() }
-                    .firstOrNull { it is java.net.Inet4Address && !it.isLoopbackAddress }
-                Logs.i("[PING] Local IP: ${localIp?.hostAddress ?: "tidak ketemu"}")
-            } catch (e: Exception) {
-                Logs.i("[PING] Local IP: gagal deteksi")
-            }
-            Logs.i("[PING] Ping: aktif (target: $target)")
             while (isActive) {
                 // ping PERTAMA langsung tanpa menunggu interval (muncul saat Connected)
                 try {

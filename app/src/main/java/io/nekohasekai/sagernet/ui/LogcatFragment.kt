@@ -184,6 +184,11 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("Accessing hidden")) continue
             // sembunyikan baris tag internal [Info]/[Debug]/[Warning] [BaseService$Interface$...] dll
             if (l.contains("Ping: aktif (interval")) continue  // sembunyikan info interval, hasil ping tetap tampil
+            // diminta user: baris2 info device/jaringan tidak ditampilkan
+            if (l.contains("Status Jaringan") || l.contains("Local IP") ||
+                l.startsWith("Device:") || l.contains("traffic count") ||
+                l.contains("[PING] Device") || l.contains("[PING] Local IP") ||
+                l.contains("Ping: aktif")) continue
             // header tag outbound/inbound dari sing-box (outbound/injector[injector]: dst)
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
             if (l.contains("sing-box started")) continue
