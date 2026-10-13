@@ -52,9 +52,9 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root, ListListener)
 
+        logDeviceInfoOnce()
         reloadSession()
         startAutoRefresh()
-        // logDeviceInfoOnce dinonaktifkan: device info tidak ditampilkan
     }
 
     // info device/IP/jaringan langsung muncul saat Log dibuka (tanpa perlu start VPN)
@@ -313,7 +313,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                     }
                     lastLen = -1L
                     onMainDispatcher {
-                        binding.textview.text = ""
+                        binding.textview.text = deviceHeader
                     }
                 }
 
