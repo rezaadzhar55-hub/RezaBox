@@ -247,6 +247,23 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             offset += line.length + 1
         }
+
+        // warnai HANYA latency: "[PING] 87 ms" -> "87 ms" berwarna, sisanya netral
+        var off2 = 0
+        for (line in span.lines()) {
+            val m = Regex("\\[PING\\] ([0-9]+) ms").find(line)
+            if (m != null) {
+                val msv = m.groupValues[1].toIntOrNull() ?: 0
+                val c = when {
+                    msv < 200 -> (0xFF00E676).toInt()
+                    msv < 500 -> (0xFFFFEB3B).toInt()
+                    else -> (0xFFFF5252).toInt()
+                }
+                span.setSpan(ForegroundColorSpan(c), off2 + m.range.first, off2 + m.range.last + 1, SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            off2 += line.length + 1
+        }
+
         binding.textview.text = if (deviceHeader.isNotBlank()) {
             val b = android.text.SpannableStringBuilder(deviceHeader + "\n\n")
             b.append(span)
