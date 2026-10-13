@@ -206,7 +206,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 // jika sisa kontennya adalah pesan HI yang kita tampilkan, tampilkan versi bersih
                 if (stripped.isNotBlank()) {
                     sb.appendLine(stripped)
-                    sb.appendLine("────────────────────────────────────────────────────────────────")
+                    sb.appendLine("────────────────────────────────")
                 }
                 continue
             }
@@ -244,11 +244,11 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             out = out.replace(Regex("""WARN\[\d+\] """), "WARN: ")
             if (out.isNotBlank()) {
                 sb.appendLine(out)
-                sb.appendLine("────────────────────────────────────────────────────────────────")
+                sb.appendLine("────────────────────────────────")
             }
         }
         // Normalisasi garis: buang semua garis lama, sisipkan TEPAT SATU garis antar baris konten
-        val G = "────────────────────────────────────────────────────────────────"
+        val G = "────────────────────────────────"
         val contentLines = sb.toString().lines()
             .filter { it.isNotBlank() && !it.startsWith(G) }
         var txt = contentLines.joinToString("\n$G\n")
