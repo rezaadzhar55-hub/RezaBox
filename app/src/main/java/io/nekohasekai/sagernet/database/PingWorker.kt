@@ -31,15 +31,17 @@ object PingWorker {
             while (isActive) {
                 // ping PERTAMA langsung tanpa menunggu interval (muncul saat Connected)
                 try {
+                    // gaya HI: ukur waktu TCP connect saja (bukan full HTTPS) -> realistis & stabil
+                    val uri = URL(target)
+                    val host = uri.host
+                    val port = if (uri.port > 0) uri.port else if (target.startsWith("https")) 443 else 80
+                    // resolve dulu (pakai DNS tunnel)
+                    val addr = java.net.InetAddress.getByName(host)
                     val start = System.currentTimeMillis()
-                    val conn = URL(target).openConnection() as HttpURLConnection
-                    conn.connectTimeout = 10000
-                    conn.readTimeout = 10000
-                    conn.setRequestProperty("User-Agent", "Ezbox Tunnel")
-                    conn.requestMethod = "GET"
-                    val code = conn.responseCode
+                    val sock = java.net.Socket()
+                    sock.connect(java.net.InetSocketAddress(addr, port), 5000)
                     val ms = System.currentTimeMillis() - start
-                    conn.inputStream.close()
+                    sock.close()
                     Logs.i("[PING] $ms ms")
                 } catch (e: Exception) {
                     Logs.i("[PING] Ping: gagal (TIMEOUT)")
