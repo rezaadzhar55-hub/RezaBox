@@ -192,6 +192,18 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
             if (l.contains("sing-box started")) continue
             // baris tag-only dengan INFO[..] prefix (INFO[0000] outbound/ssh[proxy]:)
+            // FILTER GLOBAL (semua jalur): noise koneksi & teknis — dipindah ke atas agar
+            // baris [Info]/[Debug] juga kena filter (sebelumnya hanya jalur libcore)
+            if (l.contains("inbound connection") || l.contains("outbound connection")) continue
+            if (l.contains("inbound packet") || l.contains("outbound packet")) continue
+            if (l.contains("inbound/tun") || l.contains("inbound/mixed")) continue
+            if (l.contains("outbound/direct")) continue
+            if (l.contains("outbound/ssh[proxy]: outbound connection")) continue
+            if (l.contains("injector connection to")) continue
+            if (l.contains("mdm.asus.com")) continue
+            if (l.contains("UDP is not supported by outbound")) continue
+            if (l.contains("only IP queries are supported by fakeip")) continue
+            if (l.contains("dns: exchanged") || l.contains("dns: cached")) continue
             val lNoTs = l.replace(Regex("^\\[?\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\]?\\s*"), "")
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(lNoTs.trim())) continue
             if (l.contains("[BaseService") || l.contains("Interface$") ||
