@@ -81,7 +81,10 @@ class StatsBar @JvmOverloads constructor(
     }
 
     fun changeState(state: BaseService.State) {
-        val activity = context as MainActivity
+        // Material3 membungkus context dgn ContextThemeWrapper — unwrap sampai MainActivity
+        val activity = sequence.generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+            .filterIsInstance<MainActivity>().firstOrNull()
+            ?: throw IllegalStateException("StatsBar: MainActivity context not found")
         fun postWhenStarted(what: () -> Unit) = activity.lifecycleScope.launch(Dispatchers.Main) {
             delay(100L)
             activity.whenStarted { what() }
@@ -123,7 +126,10 @@ class StatsBar @JvmOverloads constructor(
     }
 
     fun testConnection() {
-        val activity = context as MainActivity
+        // Material3 membungkus context dgn ContextThemeWrapper — unwrap sampai MainActivity
+        val activity = sequence.generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+            .filterIsInstance<MainActivity>().firstOrNull()
+            ?: throw IllegalStateException("StatsBar: MainActivity context not found")
         isEnabled = false
         setStatus(app.getText(R.string.connection_test_testing))
         runOnDefaultDispatcher {
