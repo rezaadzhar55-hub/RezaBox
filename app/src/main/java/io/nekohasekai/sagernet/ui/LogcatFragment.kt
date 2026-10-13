@@ -54,7 +54,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
 
         reloadSession()
         startAutoRefresh()
-        logDeviceInfoOnce()
+        // logDeviceInfoOnce dinonaktifkan: device info tidak ditampilkan
     }
 
     // info device/IP/jaringan langsung muncul saat Log dibuka (tanpa perlu start VPN)
@@ -243,8 +243,14 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 sb.appendLine("────────────────────────────────────────────────────────────────")
             }
         }
-        // rapikan garis ganda jadi satu
-        var txt = sb.toString().replace("────────────────────────────────────────────────────────────────\n\n────────────────────────────────────────────────────────────────", "────────────────────────────────────────────────────────────────")
+        // rapikan garis ganda jadi satu (termasuk yang dipisah baris kosong/spasi)
+        val G = "────────────────────────────────────────────────────────────────"
+        var txt = sb.toString()
+        var prev: String
+        do {
+            prev = txt
+            txt = txt.replace(Regex("(?m)^${G}$\\s*^${G}$"), G)
+        } while (txt != prev)
         val span = SpannableString(txt)
         var offset = 0
         for (line in span.lines()) {
@@ -307,8 +313,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                     }
                     lastLen = -1L
                     onMainDispatcher {
-                        binding.textview.text = deviceHeader
-                        logDeviceInfoOnce()
+                        binding.textview.text = ""
                     }
                 }
 
