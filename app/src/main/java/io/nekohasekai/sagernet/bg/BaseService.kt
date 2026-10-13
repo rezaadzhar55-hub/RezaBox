@@ -290,9 +290,7 @@ class BaseService {
                 val localIp = lp?.linkAddresses?.firstOrNull {
                     it.address is java.net.Inet4Address
                 }?.address?.hostAddress
-                Logs.i("Status Jaringan: CONNECTED to $netType")
-                Logs.i("Local IP: ${localIp ?: "?"}")
-                Logs.i("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} (Android ${android.os.Build.VERSION.RELEASE})")
+
             }
             DefaultNetworkListener.start(this) {
                 SagerNet.connectivity.getLinkProperties(it)?.also { link ->
