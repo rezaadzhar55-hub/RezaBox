@@ -203,8 +203,10 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 if (Regex("(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(stripped)) continue
                 if (stripped.startsWith("sing-box started")) continue
                 // jika sisa kontennya adalah pesan HI yang kita tampilkan, tampilkan versi bersih
-                sb.appendLine(stripped)
-                sb.appendLine("────────────────────────────────────────────────────────────────")
+                if (stripped.isNotBlank()) {
+                    sb.appendLine(stripped)
+                    sb.appendLine("────────────────────────────────────────────────────────────────")
+                }
                 continue
             }
             // sembunyikan inbound/outbound per-koneksi & config JSON (gaya HI: cukup payload & status)
@@ -235,10 +237,14 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             out = out.replace(Regex("""INFO\[\d+\] """), "")
             out = out.replace(Regex("""ERROR\[\d+\] """), "ERROR: ")
             out = out.replace(Regex("""WARN\[\d+\] """), "WARN: ")
-            sb.appendLine(out)
-            sb.appendLine("────────────────────────────────────────────────────────────────")
+            if (out.isNotBlank()) {
+                sb.appendLine(out)
+                sb.appendLine("────────────────────────────────────────────────────────────────")
+            }
         }
-        val span = SpannableString(sb.toString())
+        // rapikan garis ganda jadi satu
+        var txt = sb.toString().replace("────────────────────────────────────────────────────────────────\n\n────────────────────────────────────────────────────────────────", "────────────────────────────────────────────────────────────────")
+        val span = SpannableString(txt)
         var offset = 0
         for (line in span.lines()) {
             val color = getColorForLine(line)
@@ -251,15 +257,16 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
         // warnai HANYA latency: "[PING] 87 ms" -> "87 ms" berwarna, sisanya netral
         var off2 = 0
         for (line in span.lines()) {
-            val m = Regex("\\[PING\\] ([0-9]+) ms").find(line)
+            val m = Regex("\\[PING\\] ([0-9]+ ms)").find(line)
             if (m != null) {
-                val msv = m.groupValues[1].toIntOrNull() ?: 0
+                val msv = m.groupValues[1].substringBefore(" ").toIntOrNull() ?: 0
                 val c = when {
                     msv < 200 -> (0xFF00E676).toInt()
                     msv < 500 -> (0xFFFFEB3B).toInt()
                     else -> (0xFFFF5252).toInt()
                 }
-                span.setSpan(ForegroundColorSpan(c), off2 + m.range.first, off2 + m.range.last + 1, SPAN_EXCLUSIVE_EXCLUSIVE)
+                // warnai HANYA "87 ms" (mulai setelah "[PING] ")
+                span.setSpan(ForegroundColorSpan(c), off2 + m.range.first + 7, off2 + m.range.last + 1, SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             off2 += line.length + 1
         }
