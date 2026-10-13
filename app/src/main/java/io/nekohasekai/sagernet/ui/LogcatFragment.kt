@@ -60,8 +60,6 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     private var deviceHeader: String = ""
 
     private fun logDeviceInfoOnce() {
-        // diminta user: device info / IP lokal / operator TIDAK ditampilkan lagi di logchat
-        return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             runCatching {
                 val cm = io.nekohasekai.sagernet.SagerNet.connectivity
@@ -184,16 +182,13 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("Accessing hidden")) continue
             // sembunyikan baris tag internal [Info]/[Debug]/[Warning] [BaseService$Interface$...] dll
             if (l.contains("Ping: aktif (interval")) continue  // sembunyikan info interval, hasil ping tetap tampil
-            // diminta user: baris2 info device/jaringan tidak ditampilkan
-            if (l.contains("Status Jaringan") || l.contains("Local IP") ||
-                l.startsWith("Device:") || l.contains("traffic count") ||
-                l.contains("[PING] Device") || l.contains("[PING] Local IP") ||
-                l.contains("Ping: aktif")) continue
+            if (l.contains("traffic count")) continue
             // header tag outbound/inbound dari sing-box (outbound/injector[injector]: dst)
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
             if (l.contains("sing-box started")) continue
             // baris tag-only dengan INFO[..] prefix (INFO[0000] outbound/ssh[proxy]:)
-            if (Regex("(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(l)) continue
+            val lNoTs = l.replace(Regex("^\\[?\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\]?\\s*"), "")
+            if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(lNoTs.trim())) continue
             if (l.contains("[BaseService") || l.contains("Interface$") ||
                 l.contains("[Info] [") || l.contains("[Debug] [") ||
                 l.contains("[Warning] [") || l.contains("[Error] [")) {
@@ -227,8 +222,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             if (sshNoise.any { l.contains(it, ignoreCase = true) }) continue
             // ringkas timestamp panjang: "2026/10/11 19:26:27 " -> "19:26:27 "
-            var out = l.replace(Regex("^outbound/[a-z]+(\\[[a-z]+\\])?:\\s*"), "")
-                      .replace(Regex("^inbound/[a-z]+(\\[[a-z]+\\])?:\\s*"), "")
+            var out = l.replace(Regex("outbound/[a-z]+(\\[[a-z]+\\])?:\\s*"), "")
+                      .replace(Regex("inbound/[a-z]+(\\[[a-z]+\\])?:\\s*"), "")
             val t = Regex("""^\d{4}/\d{2}/\d{2} (\d{2}:\d{2}:\d{2}) """).find(l)
             if (t != null) out = l.substring(t.range.last + 1)
             // ringkas INFO[0000] -> hilangkan padding
