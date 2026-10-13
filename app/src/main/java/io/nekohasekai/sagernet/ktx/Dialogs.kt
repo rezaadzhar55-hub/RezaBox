@@ -18,7 +18,9 @@ fun Fragment.alert(text: String) = requireContext().alert(text)
 
 fun AlertDialog.tryToShow() {
     try {
-        val activity = context as Activity
+        // unwrap ContextThemeWrapper (Material3) sampai Activity
+        val activity = sequence.generateSequence(context as android.content.Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+            .filterIsInstance<android.app.Activity>().firstOrNull()
         if (!activity.isFinishing) {
             show()
         }
