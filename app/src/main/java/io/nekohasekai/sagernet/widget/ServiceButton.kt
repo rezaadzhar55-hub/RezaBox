@@ -62,7 +62,11 @@ class ServiceButton @JvmOverloads constructor(
     private val iconConnecting by lazy {
         AnimatedState(R.drawable.ic_service_connecting) {
             hideProgress()
-            delayedAnimation = (context as LifecycleOwner).lifecycleScope.launchWhenStarted {
+            // unwrap ContextThemeWrapper (Material3) sampai LifecycleOwner
+            val owner = sequence.generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+                .filterIsInstance<LifecycleOwner>().firstOrNull()
+                ?: throw IllegalStateException("ServiceButton: LifecycleOwner context not found")
+            delayedAnimation = owner.lifecycleScope.launchWhenStarted {
                 delay(context.resources.getInteger(android.R.integer.config_mediumAnimTime) + 1000L)
                 isIndeterminate = true
                 show()
