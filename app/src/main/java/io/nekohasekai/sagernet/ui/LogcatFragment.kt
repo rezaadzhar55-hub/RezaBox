@@ -91,7 +91,10 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 )
                 withContext(Dispatchers.Main) {
                     deviceHeader = lines.joinToString("\n")
-                    binding.textview.text = deviceHeader + "\n\n" + binding.textview.text
+                    val existing = binding.textview.text
+                    val b = android.text.SpannableStringBuilder(deviceHeader + "\n\n")
+                    if (existing is android.text.Spannable) b.append(existing) else b.append(existing)
+                    binding.textview.text = b
                 }
             }
         }
@@ -242,8 +245,11 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             offset += line.length + 1
         }
-        binding.textview.text = if (deviceHeader.isNotBlank())
-            deviceHeader + "\n\n" + span else span
+        binding.textview.text = if (deviceHeader.isNotBlank()) {
+            val b = android.text.SpannableStringBuilder(deviceHeader + "\n\n")
+            b.append(span)
+            b
+        } else span
         binding.textview.clearFocus()
         // 等 textview 完成最终 layout 再滚动到底部
         binding.textview.doOnLayout {
