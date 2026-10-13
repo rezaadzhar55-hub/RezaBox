@@ -400,7 +400,7 @@ class BaseService {
                     }
 
                     startProcesses()
-                    Logs.i("Connected")
+                    // "Connected" tidak di-log di sini — sing-box mencetaknya saat SSH handshake sukses
                     data.changeState(State.Connected)
 
                     lateInit()
