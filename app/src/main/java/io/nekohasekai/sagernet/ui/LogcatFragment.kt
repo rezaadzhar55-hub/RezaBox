@@ -60,6 +60,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     private var deviceHeader: String = ""
 
     private fun logDeviceInfoOnce() {
+        // diminta user: Device / Status Jaringan / Local IP tidak ditampilkan di logchat
+        return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             runCatching {
                 val cm = io.nekohasekai.sagernet.SagerNet.connectivity
@@ -183,6 +185,10 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             // sembunyikan baris tag internal [Info]/[Debug]/[Warning] [BaseService$Interface$...] dll
             if (l.contains("Ping: aktif (interval")) continue  // sembunyikan info interval, hasil ping tetap tampil
             if (l.contains("traffic count")) continue
+            // diminta user: baris info device/jaringan & [PING] info dihilangkan
+            if (l.contains("Status Jaringan") || l.contains("Local IP") ||
+                l.startsWith("Device:")) continue
+            if (l.contains("[PING] Device") || l.contains("[PING] Local IP")) continue
             // header tag outbound/inbound dari sing-box (outbound/injector[injector]: dst)
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:?$").containsMatchIn(l)) continue
             if (l.contains("sing-box started")) continue

@@ -28,15 +28,6 @@ object PingWorker {
         val target = DataStore.pingTarget
         stop()
         job = scope.launch {
-            Logs.i("[PING] Device: " + android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL +
-                " (Android " + android.os.Build.VERSION.RELEASE + ", " + android.os.Build.SUPPORTED_ABIS[0] + ")")
-            val lip = try {
-                java.net.NetworkInterface.getNetworkInterfaces().asSequence()
-                    .filter { it.isUp && !it.isLoopback }
-                    .flatMap { it.inetAddresses.asSequence() }
-                    .firstOrNull { it is java.net.Inet4Address && !it.isLoopbackAddress }?.hostAddress
-            } catch (e: Exception) { null }
-            Logs.i("[PING] Local IP: " + (lip ?: "tidak ketemu"))
             while (isActive) {
                 // ping PERTAMA langsung tanpa menunggu interval (muncul saat Connected)
                 try {
