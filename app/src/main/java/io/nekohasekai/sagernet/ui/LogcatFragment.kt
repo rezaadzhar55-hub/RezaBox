@@ -217,6 +217,10 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             val jsonKeys = arrayOf("\"dns\"", "\"outbounds\"", "\"inbounds\"", "\"route\"", "\"log\"", "\"type\":", "server_address", "server_port")
             if (jsonKeys.any { l.contains(it) }) continue
             if (l.contains("injector connection to")) continue  // detail teknis ssh settings
+            // noise yang tidak bisa diperbaiki: domain MDM Asus sudah NXDOMAIN, UDP tak didukung SSH
+            if (l.contains("mdm.asus.com")) continue
+            if (l.contains("UDP is not supported by outbound")) continue
+            if (l.contains("only IP queries are supported by fakeip")) continue
             // profil terkunci (export .rz): payload & bug host JANGAN ditampilkan di logchat
             if (isCurrentProfileLocked() &&
                 (l.contains("Format Payload") || l.contains("Mengirim payload") ||
