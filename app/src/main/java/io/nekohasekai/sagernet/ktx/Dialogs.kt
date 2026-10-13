@@ -21,7 +21,7 @@ fun AlertDialog.tryToShow() {
     try {
         // unwrap ContextThemeWrapper (Material3) sampai Activity
         val activity = generateSequence(context as android.content.Context?) { (it as? android.content.ContextWrapper)?.baseContext }
-            .filterIsInstance<android.app.Activity>().firstOrNull()
+            .filterIsInstance<android.app.Activity>().firstOrNull() ?: return
         if (!activity.isFinishing) {
             show()
         }
