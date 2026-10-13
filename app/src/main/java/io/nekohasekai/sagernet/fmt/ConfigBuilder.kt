@@ -464,6 +464,7 @@ fun buildConfig(
                         server_port = dialTarget.substringAfter(":", "80").toInt()
                         payload = if (usePayload) b.injectorPayload else ""
                         websocket_mode = !useTls
+                        bug_host = b.serverAddress
                         method = when (b.injectorMethod) {
                             1 -> "tls_proxy"
                             2 -> "tls"

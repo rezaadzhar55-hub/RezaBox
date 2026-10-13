@@ -4042,6 +4042,8 @@ public class SingBoxOptions {
 
         public String proxy;
 
+        public String bug_host;
+
         public String method;
 
         public Boolean tls;
