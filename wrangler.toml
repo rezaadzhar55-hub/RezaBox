@@ -1,6 +1,0 @@
-name = "ezbox-proxy"
-main = "worker.js"
-compatibility_date = "2024-09-01"
-routes = [
-  { pattern = "9r.rezadhar.dpdns.org", custom_domain = true }
-]
