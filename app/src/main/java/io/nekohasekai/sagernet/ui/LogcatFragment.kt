@@ -60,6 +60,8 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     private var deviceHeader: String = ""
 
     private fun logDeviceInfoOnce() {
+        // diminta user: device info / IP lokal / operator TIDAK ditampilkan lagi di logchat
+        return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             runCatching {
                 val cm = io.nekohasekai.sagernet.SagerNet.connectivity
@@ -157,16 +159,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             line.contains("Key exchange") || line.contains("Using algorithm") -> (0xFF90A4AE).toInt() // abu terang
             line.contains("Authenticating with password") -> (0xFFFFD54F).toInt() // kuning muda
             line.contains("Connected") || line.contains("Accepted password") -> (0xFF00E676).toInt() // HIJAU terang
-            line.contains("[PING]") -> {
-                val ms = Regex("Ping: ([0-9]+) ms").find(line)?.let { it.groupValues.getOrNull(1) }?.toIntOrNull()
-                when {
-                    ms == null && line.contains("gagal") -> (0xFFFF5252).toInt()
-                    ms == null -> (0xFF1E90FF).toInt()
-                    ms < 200 -> (0xFF00E676).toInt()
-                    ms < 500 -> (0xFFFFEB3B).toInt()
-                    else -> (0xFFFF5252).toInt()
-                }
-            }
+            line.contains("[PING]") -> (0xFFBDBDBD).toInt() // baris ping netral; angka diwarnai terpisah
             line.contains("101 Switching Protocols") || line.contains("200 Connection established") -> (0xFF00E676).toInt()
             line.contains("Local IP") || line.contains("Format Payload") || line.contains("Mengirim payload") -> (0xFFBDBDBD).toInt()
             line.contains("ERROR") || line.contains("Koneksi Hilang") || line.contains("gagal") -> (0xFFFF5252).toInt()
@@ -202,6 +195,9 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 // baris hanya berupa tag tanpa konten berguna -> buang; kontennya tetap lewat jika ada teks lain
                 val stripped = l.replace(Regex("\\[(Info|Debug|Warning|Error)\\] \\[[^\\]]*\\]?"), "").trim()
                 if (stripped.isEmpty() || stripped == "]") continue
+                // tag-only dari sing-box tidak boleh lolos lewat jalur ini juga
+                if (Regex("(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(stripped)) continue
+                if (stripped.startsWith("sing-box started")) continue
                 // jika sisa kontennya adalah pesan HI yang kita tampilkan, tampilkan versi bersih
                 sb.appendLine(stripped)
                 continue
@@ -245,6 +241,28 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             offset += line.length + 1
         }
+        // warnai HANYA angka ping: "Ping: 123 ms (BAGUS)" -> 123 ms berwarna
+        val pingColor = when {
+            sb.contains("BAGUS") -> (0xFF00E676).toInt()
+            sb.contains("SEDANG") -> (0xFFFFEB3B).toInt()
+            else -> (0xFFFF5252).toInt()
+        }
+        // (diproses per baris di bawah)
+        var off2 = 0
+        for (line in span.lines()) {
+            val m = Regex("Ping: ([0-9]+) ms").find(line)
+            if (m != null) {
+                val msv = m.groupValues[1].toIntOrNull() ?: 0
+                val c = when {
+                    msv < 200 -> (0xFF00E676).toInt()
+                    msv < 500 -> (0xFFFFEB3B).toInt()
+                    else -> (0xFFFF5252).toInt()
+                }
+                span.setSpan(ForegroundColorSpan(c), off2 + m.range.first, off2 + m.range.last + 1, SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            off2 += line.length + 1
+        }
+
         binding.textview.text = if (deviceHeader.isNotBlank()) {
             val b = android.text.SpannableStringBuilder(deviceHeader + "\n\n")
             b.append(span)
