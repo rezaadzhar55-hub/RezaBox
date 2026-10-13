@@ -60,8 +60,6 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     private var deviceHeader: String = ""
 
     private fun logDeviceInfoOnce() {
-        // diminta user: Device / Status Jaringan / Local IP tidak ditampilkan di logchat
-        return
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             runCatching {
                 val cm = io.nekohasekai.sagernet.SagerNet.connectivity
@@ -206,7 +204,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 if (stripped.startsWith("sing-box started")) continue
                 // jika sisa kontennya adalah pesan HI yang kita tampilkan, tampilkan versi bersih
                 sb.appendLine(stripped)
-                if (!stripped.contains("[PING]")) sb.appendLine("────────────────────")
+                if (!stripped.contains("[PING]")) sb.appendLine("────────────────────────────────────────────────────────────────")
                 continue
             }
             // sembunyikan inbound/outbound per-koneksi & config JSON (gaya HI: cukup payload & status)
@@ -238,7 +236,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             out = out.replace(Regex("""ERROR\[\d+\] """), "ERROR: ")
             out = out.replace(Regex("""WARN\[\d+\] """), "WARN: ")
             sb.appendLine(out)
-            if (!out.contains("[PING]")) sb.appendLine("────────────────────")
+            if (!out.contains("[PING]")) sb.appendLine("────────────────────────────────────────────────────────────────")
         }
         val span = SpannableString(sb.toString())
         var offset = 0
@@ -249,22 +247,6 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             offset += line.length + 1
         }
-        // warnai HANYA latency ping: "Ping: 123 ms" -> "123 ms" berwarna, sisanya netral
-        var off2 = 0
-        for (line in span.lines()) {
-            val m = Regex("\\[PING\\] ([0-9]+) ms").find(line)
-            if (m != null) {
-                val msv = m.groupValues[1].toIntOrNull() ?: 0
-                val c = when {
-                    msv < 200 -> (0xFF00E676).toInt()
-                    msv < 500 -> (0xFFFFEB3B).toInt()
-                    else -> (0xFFFF5252).toInt()
-                }
-                span.setSpan(ForegroundColorSpan(c), off2 + m.range.first, off2 + m.range.last + 1, SPAN_EXCLUSIVE_EXCLUSIVE)
-            }
-            off2 += line.length + 1
-        }
-
         binding.textview.text = if (deviceHeader.isNotBlank()) {
             val b = android.text.SpannableStringBuilder(deviceHeader + "\n\n")
             b.append(span)
