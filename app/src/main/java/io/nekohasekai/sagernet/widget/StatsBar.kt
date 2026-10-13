@@ -1,4 +1,5 @@
 package io.nekohasekai.sagernet.widget
+import kotlin.sequences.generateSequence
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -82,7 +83,7 @@ class StatsBar @JvmOverloads constructor(
 
     fun changeState(state: BaseService.State) {
         // Material3 membungkus context dgn ContextThemeWrapper — unwrap sampai MainActivity
-        val activity = sequence.generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+        val activity = generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
             .filterIsInstance<MainActivity>().firstOrNull()
             ?: throw IllegalStateException("StatsBar: MainActivity context not found")
         fun postWhenStarted(what: () -> Unit) = activity.lifecycleScope.launch(Dispatchers.Main) {
@@ -127,7 +128,7 @@ class StatsBar @JvmOverloads constructor(
 
     fun testConnection() {
         // Material3 membungkus context dgn ContextThemeWrapper — unwrap sampai MainActivity
-        val activity = sequence.generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+        val activity = generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
             .filterIsInstance<MainActivity>().firstOrNull()
             ?: throw IllegalStateException("StatsBar: MainActivity context not found")
         isEnabled = false

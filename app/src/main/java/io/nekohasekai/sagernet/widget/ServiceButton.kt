@@ -1,4 +1,5 @@
 package io.nekohasekai.sagernet.widget
+import kotlin.sequences.generateSequence
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -63,7 +64,7 @@ class ServiceButton @JvmOverloads constructor(
         AnimatedState(R.drawable.ic_service_connecting) {
             hideProgress()
             // unwrap ContextThemeWrapper (Material3) sampai LifecycleOwner
-            val owner = sequence.generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+            val owner = generateSequence(context as Context?) { (it as? android.content.ContextWrapper)?.baseContext }
                 .filterIsInstance<LifecycleOwner>().firstOrNull()
                 ?: throw IllegalStateException("ServiceButton: LifecycleOwner context not found")
             delayedAnimation = owner.lifecycleScope.launchWhenStarted {

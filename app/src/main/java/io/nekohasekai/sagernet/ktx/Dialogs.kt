@@ -1,4 +1,5 @@
 package io.nekohasekai.sagernet.ktx
+import kotlin.sequences.generateSequence
 
 import android.app.Activity
 import android.content.Context
@@ -19,7 +20,7 @@ fun Fragment.alert(text: String) = requireContext().alert(text)
 fun AlertDialog.tryToShow() {
     try {
         // unwrap ContextThemeWrapper (Material3) sampai Activity
-        val activity = sequence.generateSequence(context as android.content.Context?) { (it as? android.content.ContextWrapper)?.baseContext }
+        val activity = generateSequence(context as android.content.Context?) { (it as? android.content.ContextWrapper)?.baseContext }
             .filterIsInstance<android.app.Activity>().firstOrNull()
         if (!activity.isFinishing) {
             show()
