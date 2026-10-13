@@ -252,7 +252,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
         // warnai HANYA latency ping: "Ping: 123 ms" -> "123 ms" berwarna, sisanya netral
         var off2 = 0
         for (line in span.lines()) {
-            val m = Regex("Ping: ([0-9]+) ms").find(line)
+            val m = Regex("\\[PING\\] ([0-9]+) ms").find(line)
             if (m != null) {
                 val msv = m.groupValues[1].toIntOrNull() ?: 0
                 val c = when {

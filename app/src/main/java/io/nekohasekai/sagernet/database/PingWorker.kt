@@ -40,7 +40,7 @@ object PingWorker {
                     val code = conn.responseCode
                     val ms = System.currentTimeMillis() - start
                     conn.inputStream.close()
-                    Logs.i("[PING] Ping: $ms ms")
+                    Logs.i("[PING] $ms ms")
                 } catch (e: Exception) {
                     Logs.i("[PING] Ping: gagal (TIMEOUT)")
                 }
