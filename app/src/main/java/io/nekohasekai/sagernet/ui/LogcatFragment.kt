@@ -204,7 +204,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 if (stripped.startsWith("sing-box started")) continue
                 // jika sisa kontennya adalah pesan HI yang kita tampilkan, tampilkan versi bersih
                 sb.appendLine(stripped)
-                if (!stripped.contains("[PING]")) sb.appendLine("────────────────────────────────────────────────────────────────")
+                sb.appendLine("────────────────────────────────────────────────────────────────")
                 continue
             }
             // sembunyikan inbound/outbound per-koneksi & config JSON (gaya HI: cukup payload & status)
@@ -236,7 +236,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             out = out.replace(Regex("""ERROR\[\d+\] """), "ERROR: ")
             out = out.replace(Regex("""WARN\[\d+\] """), "WARN: ")
             sb.appendLine(out)
-            if (!out.contains("[PING]")) sb.appendLine("────────────────────────────────────────────────────────────────")
+            sb.appendLine("────────────────────────────────────────────────────────────────")
         }
         val span = SpannableString(sb.toString())
         var offset = 0
