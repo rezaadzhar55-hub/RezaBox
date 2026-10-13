@@ -243,14 +243,12 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 sb.appendLine("────────────────────────────────────────────────────────────────")
             }
         }
-        // rapikan garis ganda jadi satu (termasuk yang dipisah baris kosong/spasi)
+        // Normalisasi garis: buang semua garis lama, sisipkan TEPAT SATU garis antar baris konten
         val G = "────────────────────────────────────────────────────────────────"
-        var txt = sb.toString()
-        var prev: String
-        do {
-            prev = txt
-            txt = txt.replace(Regex("(?m)^${G}$\\s*^${G}$"), G)
-        } while (txt != prev)
+        val contentLines = sb.toString().lines()
+            .filter { it.isNotBlank() && !it.startsWith(G) }
+        var txt = contentLines.joinToString("\n$G\n")
+        if (contentLines.isNotEmpty()) txt = "$G\n" + txt + "\n$G"
         val span = SpannableString(txt)
         var offset = 0
         for (line in span.lines()) {
