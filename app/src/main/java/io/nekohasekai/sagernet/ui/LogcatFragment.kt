@@ -241,13 +241,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             )
             offset += line.length + 1
         }
-        // warnai HANYA angka ping: "Ping: 123 ms (BAGUS)" -> 123 ms berwarna
-        val pingColor = when {
-            sb.contains("BAGUS") -> (0xFF00E676).toInt()
-            sb.contains("SEDANG") -> (0xFFFFEB3B).toInt()
-            else -> (0xFFFF5252).toInt()
-        }
-        // (diproses per baris di bawah)
+        // warnai HANYA latency ping: "Ping: 123 ms" -> "123 ms" berwarna, sisanya netral
         var off2 = 0
         for (line in span.lines()) {
             val m = Regex("Ping: ([0-9]+) ms").find(line)
