@@ -729,10 +729,11 @@ fun buildConfig(
                 source_ip_cidr = listOf("224.0.0.0/3", "ff00::/8")
                 action = "reject"
             })
-            // SSH injector tidak support UDP (termasuk DNS-over-QUIC 443/udp) — UDP ke direct
-            route.rules.add(0, Rule_DefaultOptions().apply {
-                network = listOf("udp")
-                outbound = TAG_BYPASS
+            // Blokir IPv6: server SSH tidak punya IPv6 publik — tujuan IPv6 di-reject,
+            // aplikasi Android otomatis fallback ke IPv4 (tetap lewat tunnel).
+            route.rules.add(Rule_DefaultOptions().apply {
+                ip_version = 6
+                action = "reject"
             })
             // FakeDNS obj
             if (useFakeDns) {
