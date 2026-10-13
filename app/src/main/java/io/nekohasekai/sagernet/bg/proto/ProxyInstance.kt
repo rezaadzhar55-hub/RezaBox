@@ -53,10 +53,7 @@ class ProxyInstance(profile: ProxyEntity, var service: BaseService.Interface? = 
             looper = service?.let { TrafficLooper(it.data, this) }
             looper?.start()
         }
-        // ping gaya HI (opsional, diatur di Settings)
-        runOnDefaultDispatcher {
-            PingWorker.start()
-        }
+        // ping gaya HI dimulai SETELAH SSH handshake sukses (dilihat LogcatFragment)
     }
 
     override fun close() {

@@ -216,6 +216,10 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
                 if (Regex("(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(stripped)) continue
                 if (stripped.startsWith("sing-box started")) continue
                 // jika sisa kontennya adalah pesan HI yang kita tampilkan, tampilkan versi bersih
+                if (stripped.trim() == "Connected") {
+                    // SSH handshake sukses -> mulai ping (sekali saja per sesi)
+                    io.nekohasekai.sagernet.database.PingWorker.startIfNeeded()
+                }
                 if (stripped.isNotBlank()) {
                     sb.appendLine(stripped)
                     sb.appendLine("────────────────────────────────")

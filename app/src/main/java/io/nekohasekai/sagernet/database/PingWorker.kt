@@ -51,6 +51,11 @@ object PingWorker {
         }
     }
 
+    fun startIfNeeded() {
+        if (job?.isActive == true) return
+        start()
+    }
+
     fun stop() {
         job?.cancel()
         job = null
