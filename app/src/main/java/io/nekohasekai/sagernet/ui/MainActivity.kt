@@ -354,14 +354,8 @@ class MainActivity : ThemedActivity(),
         DataStore.serviceState = state
 
         binding.stats.changeState(state)
-        // label teks tombol gaya HI: START -> Connecting... -> STOP
-        binding.fabLabel.text = getString(
-            when (state) {
-                BaseService.State.Connected, BaseService.State.Stopping -> R.string.stop
-                BaseService.State.Connecting -> R.string.connecting
-                else -> R.string.start
-            }
-        ).uppercase()
+        // tombol power bulat: teks diletakkan sebagai label kecil di bawah ikon (status ada di StatsBar)
+        // binding.fabLabel.text tidak dipakai lagi — ikon ⚡ permanen
         if (msg != null) snackbar(getString(R.string.vpn_error, msg)).show()
     }
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="upload_label">UPLOAD</string>
+    <string name="download_label">DOWNLOAD</string>
     <string name="app_name" translatable="false">Ezbox Tunnel</string>
     <string name="app_name_long" translatable="false">Ezbox Tunnel</string>
     <string name="app_desc">The universal proxy toolchain for Android, written in Kotlin.</string>

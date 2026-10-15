@@ -259,6 +259,10 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             out = out.replace(Regex("""ERROR\[\d+\] """), "ERROR: ")
             out = out.replace(Regex("""WARN\[\d+\] """), "WARN: ")
             if (out.isNotBlank()) {
+                // trigger ping saat SSH handshake sukses (jalur libcore mentah)
+                if (out.trim() == "Connected") {
+                    io.nekohasekai.sagernet.database.PingWorker.startIfNeeded()
+                }
                 sb.appendLine(out)
                 sb.appendLine("────────────────────────────────")
             }

@@ -5,6 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/ezbox_background"
     tools:openDrawer="start">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -18,82 +19,108 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- We double trackThickness as half of it will be invisible -->
-
-        <TextView
-            android:id="@+id/fabLabel"
-            android:layout_width="200dp"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="12dp"
-            android:gravity="center"
-            android:elevation="8dp"
-            android:background="@drawable/bg_fab_label"
-            android:backgroundTint="@color/ezbox_primary"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:text="START"
-            android:clickable="true"
-            android:focusable="true"
-            app:layout_anchor="@id/stats"
-            app:layout_anchorGravity="top|center_horizontal" />
-
-
+        <!-- StatsBar card gelap: tx/rx sejajar + status -->
         <io.nekohasekai.sagernet.widget.StatsBar
             android:id="@+id/stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:nextFocusUp="@+id/fabLabel"
-            app:backgroundTint="?colorMaterial300"
+            android:layout_margin="12dp"
+            app:backgroundTint="@color/ezbox_card"
             app:contentInsetStart="0dp"
-            app:hideOnScroll="true"
-            app:layout_scrollFlags="enterAlways|scroll">
+            app:hideOnScroll="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="14dp">
 
-                <TextView
-                    android:id="@+id/tx"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_gravity="fill_horizontal"
-                    android:ellipsize="marquee"
-                    android:singleLine="true"
-                    android:textColor="?whiteOrTextPrimary"
-                    android:textSize="14sp" />
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
 
-                <TextView
-                    android:id="@+id/rx"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_gravity="fill_horizontal"
-                    android:ellipsize="marquee"
-                    android:singleLine="true"
-                    android:textColor="?whiteOrTextPrimary"
-                    android:textSize="14sp" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/upload_label"
+                            android:textColor="#7FD8E6F0"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tx"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="marquee"
+                            android:singleLine="true"
+                            android:textColor="@color/ezbox_tertiary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/download_label"
+                            android:textColor="#7FD8E6F0"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/rx"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="marquee"
+                            android:singleLine="true"
+                            android:textColor="@color/ezbox_secondary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/status"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="fill_horizontal"
+                    android:layout_marginTop="8dp"
                     android:ellipsize="end"
+                    android:gravity="center"
                     android:maxLines="1"
-                    android:textColor="?whiteOrTextPrimary"
-                    android:textSize="16sp"
+                    android:textColor="#D8E6F0"
+                    android:textSize="14sp"
                     tools:text="@string/connection_test_available" />
-
             </LinearLayout>
-
         </io.nekohasekai.sagernet.widget.StatsBar>
+
+        <!-- Tombol POWER bulat besar di tengah -->
+        <TextView
+            android:id="@+id/fabLabel"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_marginBottom="118dp"
+            android:gravity="center"
+            android:elevation="10dp"
+            android:background="@drawable/bg_power_button"
+            android:text="⚡"
+            android:textSize="34sp"
+            android:textColor="#04121C"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_anchor="@id/stats"
+            app:layout_anchorGravity="top|center_horizontal" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -103,6 +130,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/ezbox_card"
         app:itemIconTint="@color/navigation_icon"
         app:itemTextColor="@color/navigation_icon"
         app:menu="@menu/main_drawer_menu" />
@@ -113,6 +141,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/ezbox_card"
         app:itemIconTint="@color/navigation_icon"
         app:itemShapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
         app:itemShapeFillColor="@color/navigation_item"
