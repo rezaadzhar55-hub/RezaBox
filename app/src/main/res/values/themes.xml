@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.SagerNet" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.SagerNet" parent="Theme.Material3.Dark.NoActionBar">
         <item name="actionBarStyle">@style/Widget.MaterialComponents.ActionBar.Solid</item>
         <item name="actionModeCloseDrawable">@drawable/ic_navigation_close</item>
         <item name="colorButtonNormal">?colorAccent</item>
@@ -8,6 +8,13 @@
         <item name="colorPrimary">@color/ezbox_primary</item>
         <item name="colorPrimaryDark">@color/ezbox_primary_dark</item>
         <item name="colorAccent">@color/ezbox_secondary</item>
+        <item name="android:colorBackground">@color/ezbox_background</item>
+        <item name="colorSurface">@color/ezbox_surface</item>
+        <item name="colorOnSurface">#D8E6F0</item>
+        <item name="colorOnPrimary">#04121C</item>
+        <item name="android:statusBarColor">@color/ezbox_background</item>
+        <item name="android:navigationBarColor">@color/ezbox_background</item>
+        <item name="android:windowLightStatusBar">false</item>
 
         <item name="colorMaterial100">@color/ezbox_tertiary</item>
         <item name="colorMaterial300">@color/ezbox_tertiary</item>

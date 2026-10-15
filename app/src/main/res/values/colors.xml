@@ -2,12 +2,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Ezbox Tunnel Material3 palette -->
-    <color name="ezbox_primary">#1565C0</color>
-    <color name="ezbox_primary_dark">#0D47A1</color>
-    <color name="ezbox_secondary">#00897B</color>
-    <color name="ezbox_secondary_dark">#00695C</color>
-    <color name="ezbox_tertiary">#0288D1</color>
-    <color name="ezbox_surface">#0F1419</color>
+    <color name="ezbox_primary">#4FC3F7</color>
+    <color name="ezbox_primary_dark">#0192D1</color>
+    <color name="ezbox_secondary">#26C6DA</color>
+    <color name="ezbox_secondary_dark">#0097A7</color>
+    <color name="ezbox_tertiary">#80DEEA</color>
+    <color name="ezbox_surface">#0B1117</color>
+    <color name="ezbox_background">#060A0E</color>
+    <color name="ezbox_card">#121A22</color>
+    <color name="ezbox_stroke">#1E2A36</color>
 
     <integer-array name="material_colors">
         <item>@color/material_red_500</item>

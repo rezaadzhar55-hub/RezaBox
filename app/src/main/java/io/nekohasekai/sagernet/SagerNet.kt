@@ -55,6 +55,12 @@ class SagerNet : Application(),
     override fun onCreate() {
         super.onCreate()
 
+        // Dark modern: paksa dark theme global (Ezbox dark palette)
+        if (isMainProcess) {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
+                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
+        }
+
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler)
 
         if (isMainProcess || isBgProcess) {

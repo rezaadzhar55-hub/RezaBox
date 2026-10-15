@@ -19,7 +19,8 @@
         <ScrollView
             android:id="@+id/scroolview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/ezbox_surface">
 
             <TextView
                 android:id="@+id/textview"
@@ -29,6 +30,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:gravity="start|top"
+                android:fontFamily="monospace"
+                android:padding="10dp"
+                android:textColor="#C9D6E4"
                 android:textIsSelectable="true"
                 tools:ignore="LabelFor" />
         </ScrollView>
