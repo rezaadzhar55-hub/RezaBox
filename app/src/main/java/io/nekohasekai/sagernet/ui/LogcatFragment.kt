@@ -200,9 +200,20 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             if (l.contains("outbound/direct")) continue
             if (l.contains("outbound/ssh[proxy]: outbound connection")) continue
             if (l.contains("injector connection to")) continue
-            if (l.contains("mdm.asus.com")) continue
+            if (l.contains("mdm.asus.com") || l.contains("settings.crashlytics.com")) continue
             if (l.contains("UDP is not supported by outbound")) continue
             if (l.contains("only IP queries are supported by fakeip")) continue
+            // noise tambahan: semua sisa teknis yang tidak informatif bagi user
+            if (l.contains("connection: open connection to")) continue
+            if (l.contains("Name or service not known")) continue
+            if (l.contains("router: process DNS packet")) continue
+            if (l.contains("TrafficLooper")) continue
+            if (l.contains("dns: exchanged") || l.contains("dns: cached")) continue
+            if (l.contains("inbound connection from") || l.contains("inbound connection to")) continue
+            if (l.contains("outbound connection to")) continue
+            if (l.contains("rejected: connect failed")) continue
+            if (l.contains("mixed-in")) continue
+            if (l.contains("started at tun")) continue
             if (l.contains("dns: exchanged") || l.contains("dns: cached")) continue
             val lNoTs = l.replace(Regex("^\\[?\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\]?\\s*"), "")
             if (Regex("^(outbound|inbound)/[a-z]+(\\[[a-z]+\\])?:\\s*$").containsMatchIn(lNoTs.trim())) continue
