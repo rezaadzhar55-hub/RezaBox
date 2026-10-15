@@ -44,7 +44,7 @@ object PingWorker {
                     sock.close()
                     Logs.i("[PING] $ms ms")
                 } catch (e: Exception) {
-                    Logs.i("[PING] Ping: gagal (TIMEOUT)")
+                    try { Logs.i("[PING] Ping: gagal (TIMEOUT)") } catch (_: Exception) { }
                 }
                 delay(interval * 1000L)
             }

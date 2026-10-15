@@ -8,7 +8,7 @@ object Logs {
 
     private fun mkTag(): String {
         val stackTrace = Thread.currentThread().stackTrace
-        return stackTrace[4].className.substringAfterLast(".")
+        return if (stackTrace.size > 4) stackTrace[4].className.substringAfterLast(".") else "App"
     }
 
     // level int use logrus.go
